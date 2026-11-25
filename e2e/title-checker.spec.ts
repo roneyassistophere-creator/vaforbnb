@@ -121,7 +121,11 @@ test("arrive from the kit with the scorer's title, then continue to the descript
   await page.getByLabel("Town or city (optional)").fill("Leeds");
   await page.getByLabel("Nearest station or stop (optional)").fill("Leeds station");
   await page.getByRole("button", { name: "Score my listing" }).click();
+  // Send the listing to the description builder (it opens), then come back and carry on with the kit.
   await page.getByRole("button", { name: "Send to the description builder →" }).click();
+  await expect(page).toHaveURL(/airbnb-description-builder/);
+  await page.goBack();
+  await expect(page.locator('[data-tool="airbnb-ai-readiness-score"][data-ready]')).toBeVisible();
   await page.getByRole("link", { name: "Continue to the title checker →" }).click();
 
   // Step 2: this tool, prefilled.
@@ -139,7 +143,12 @@ test("arrive from the kit with the scorer's title, then continue to the descript
   const next = page.locator('[data-next-step="kit"]');
   await expect(next).toContainText("Next in your kit: AI-ready description builder");
   await next.getByRole("button", { name: /description builder/ }).click();
-  await expect(page.locator("[data-next-saved]")).toContainText("Saved on this device");
+  // Step 3: the description builder opens in the kit and imports the title checker's details.
+  await expect(page).toHaveURL("/free-tools/airbnb-description-builder?kit=more-bookings");
+  await expect(page.locator('[data-tool="airbnb-description-builder"][data-ready]')).toBeVisible();
+  // Next.js keeps the previous page hidden after an in-app navigation, so look at visible elements only.
+  await expect(page.locator("[data-kit-badge]:visible")).toHaveText("Get more bookings kit · step 3");
+  await expect(page.locator("[data-imported]:visible")).toContainText("Imported from the title checker");
   const d = await page.evaluate(() => JSON.parse(localStorage.getItem("vaforbnb:handoff:listing-text") ?? "null"));
   expect(d.source).toBe("airbnb-title-checker");
   expect(d.data.title).toBe("Quillstone flat · parking · 6 min to Leeds station");

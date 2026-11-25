@@ -151,7 +151,7 @@ export const tools: Tool[] = [
     ...T("bookings", "AI-ready description builder", "How do I write my description?", 3, "Text to copy", "All UK", 4, "description listing description write my listing the space guest access ai search"),
     slug: descriptionBuilderSlug,
     href: descriptionBuilderPath,
-    status: "coming-soon",
+    status: "live",
     kit: "more-bookings",
     related: ["ai-readiness-listing-scorer", "airbnb-title-checker", "photo-shot-list-planner"],
     nextStep: { label: "Score this description", href: "/free-tools/airbnb-ai-readiness-score" },

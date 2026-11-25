@@ -160,7 +160,7 @@ test("report: only lead fields are sent, and the PDF is made on the device", asy
   noLeaks(seen);
 });
 
-test("from the kit: badge, and the next card saves the title for the title checker", async ({ page }) => {
+test("from the kit: badge; Send to the description builder opens it with the listing; the next card saves the title for the title checker", async ({ page }) => {
   await open(page, "?kit=more-bookings");
   await expect(page.getByText("Get more bookings kit · step 1")).toBeVisible();
   await page.getByLabel("Title", { exact: true }).fill("Quillstone flat");
@@ -168,7 +168,12 @@ test("from the kit: badge, and the next card saves the title for the title check
   await page.getByRole("button", { name: "Score my listing" }).click();
   await expect(page.getByRole("heading", { name: "Next in your kit: Airbnb title checker" })).toBeVisible();
   await page.getByRole("button", { name: "Send to the description builder →" }).click();
-  await expect(page.getByText(/Saved on this device/)).toBeVisible();
+  // The builder is live: it opens and imports the listing.
+  await expect(page).toHaveURL("/free-tools/airbnb-description-builder?from=airbnb-ai-readiness-score");
+  await expect(page.locator('[data-tool="airbnb-description-builder"][data-ready]')).toBeVisible();
+  await expect(page.locator("[data-imported]")).toContainText("Imported from your AI-readiness score");
+  await page.goBack();
+  await expect(page.locator('[data-tool="airbnb-ai-readiness-score"][data-ready]')).toBeVisible();
   await page.getByRole("link", { name: /Save my title for the title checker|Continue to the title checker/ }).click();
   await expect(page).toHaveURL(/\/free-tools(\/airbnb-title-checker|#airbnb-title-checker)/);
   const t = await page.evaluate(() => JSON.parse(localStorage.getItem("vaforbnb:handoff:listing-title") ?? "null"));

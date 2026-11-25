@@ -265,13 +265,30 @@ test("page: SEO, structured data and static sections are in the HTML without Jav
   await ctx.close();
 });
 
-test("hub: 3rd in Get more bookings, Coming soon until set live", async ({ page }) => {
+test("hub: 3rd in Get more bookings and live; linked from the scorer, house rules and Listing optimisation", async ({ page }) => {
   await page.goto("/free-tools?job=get-more-bookings");
   await expect(page.getByRole("button", { name: /Get more bookings/ })).toHaveAttribute("aria-pressed", "true");
   const card = page.locator("#ai-ready-description-builder");
-  await expect(card).toContainText("Coming soon");
+  await expect(card).toHaveAttribute("href", PATH);
+  await expect(card).not.toContainText("Coming soon");
   await expect(card).toContainText("How do I write my description?");
   await expect(card).toContainText("Text to copy");
   const names = await page.locator("#all [id] p.font-extrabold").allTextContents();
   expect(names.slice(0, 3)).toEqual(["AI-readiness listing scorer", "Airbnb title checker", "AI-ready description builder"]);
+
+  await page.goto("/services/listing-optimisation");
+  await expect(page.locator("[data-description-builder-link] a")).toHaveAttribute("href", PATH);
+
+  // The scorer's guest-needs or vague-word fix card links here.
+  await page.goto("/free-tools/airbnb-ai-readiness-score");
+  await page.evaluate(() => localStorage.clear());
+  await page.reload();
+  await expect(page.locator('[data-tool="airbnb-ai-readiness-score"][data-ready]')).toBeVisible();
+  // A listing whose top fixes include guest-needs coverage (D).
+  await page.getByLabel("Title", { exact: true }).fill("Lovely flat in Leeds");
+  await page.locator("#air-description").fill("Spacious flat with WiFi and parking. 10 minutes to the city centre.");
+  await page.getByRole("button", { name: "Score my listing" }).click();
+  await page.locator('[data-fix="D"] [data-write-description]').click();
+  await expect(page).toHaveURL(`${PATH}?from=airbnb-ai-readiness-score`);
+  await expect(page.locator("[data-imported]")).toContainText("Imported from your AI-readiness score");
 });
