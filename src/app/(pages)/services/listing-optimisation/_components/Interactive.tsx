@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
+import { isLive, toolById, toolLink } from "@/content/tools/catalog";
+import { handoffKey, readHandoffData } from "@/lib/tools/handoff";
 import { needs, readinessChecks } from "../content";
 
 function Sparkle({ size = 20 }: { size?: number }) {
@@ -172,13 +174,43 @@ export function ReadinessCheck() {
       <a href="#audit" className="btn btn-coral mt-[18px] w-full rounded-full">
         Get a free AI-readiness audit
       </a>
+      {isLive(scorer) && (
+        <a href={toolLink(scorer!)} className="btn btn-outline mt-2 w-full rounded-full" data-scorer-link>
+          Get your full readiness score (free tool) →
+        </a>
+      )}
     </div>
   );
 }
 
+const scorer = toolById("ai-readiness-listing-scorer");
+
+type AuditPrefill = { score: number; band: string; town: string };
+const checkPrefill = (d: unknown): AuditPrefill | null => {
+  if (!d || typeof d !== "object") return null;
+  const o = d as Partial<AuditPrefill>;
+  if (typeof o.score !== "number" || o.score < 0 || o.score > 100 || typeof o.band !== "string") return null;
+  return { score: Math.round(o.score), band: o.band.slice(0, 30), town: typeof o.town === "string" ? o.town.slice(0, 80) : "" };
+};
+
 /** Free listing audit request (opens the visitor's email app). */
 export function AuditForm() {
   const [sent, setSent] = useState(false);
+  // Score, band and town the host chose to share from the AI-readiness scorer (never listing text).
+  const [prefill, setPrefill] = useState<AuditPrefill | null>(null);
+  useEffect(() => {
+    // Read once after hydration: saved on this device by the scorer.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPrefill(readHandoffData("audit-prefill", checkPrefill)?.data ?? null);
+  }, []);
+  const dropPrefill = () => {
+    try {
+      window.localStorage.removeItem(handoffKey("audit-prefill"));
+    } catch {
+      // ignore
+    }
+    setPrefill(null);
+  };
   const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const d = new FormData(e.currentTarget);
@@ -187,6 +219,7 @@ export function AuditForm() {
       `First name: ${d.get("name") ?? ""}`,
       `Number of listings: ${d.get("count") ?? ""}`,
       `Email: ${d.get("email") ?? ""}`,
+      ...(prefill ? [`AI-readiness score: ${prefill.score} / 100 (${prefill.band})${prefill.town ? `, ${prefill.town}` : ""}`] : []),
     ].join("\n");
     window.location.href = `mailto:${brand.contact.email}?subject=${encodeURIComponent("Free listing audit")}&body=${encodeURIComponent(body)}`;
     setSent(true);
@@ -212,6 +245,16 @@ export function AuditForm() {
         Email
         <input name="email" type="email" required className={field} />
       </label>
+      {prefill && (
+        <div className="flex flex-wrap items-center gap-2 rounded-[12px] bg-violet-50 px-3.5 py-3 text-sm text-ink" data-audit-prefill>
+          <span className="flex-1">
+            Included: your AI-readiness score <strong>{prefill.score} / 100</strong> ({prefill.band}){prefill.town ? `, ${prefill.town}` : ""}.
+          </span>
+          <button type="button" onClick={dropPrefill} className="min-h-11 cursor-pointer border-none bg-transparent p-0 text-sm font-bold text-brand underline">
+            Don’t include
+          </button>
+        </div>
+      )}
       <button type="submit" className="btn btn-coral mt-1 w-full rounded-full">
         Audit my listing
       </button>

@@ -4,7 +4,7 @@
  * it, or when its linked amenity is ticked.
  */
 
-import { findPhrases, type Analysis, type Span } from "./analyse";
+import { findEvidence, type Analysis, type Span } from "./analyse";
 
 export type Need = {
   id: string;
@@ -48,7 +48,7 @@ export function evaluateNeed(need: Need, a: Analysis, facts: NeedFacts): NeedRes
     }
   }
   const phrases = need.evidence.filter((e) => !e.startsWith("@"));
-  const hit = findPhrases(a.text, phrases)[0];
+  const hit = findEvidence(a, phrases)[0];
   if (hit) return { ...base, covered: true, evidence: { kind: "text", span: hit } };
   for (const am of need.amenities) {
     if (am === "@parkingStated" && facts.parkingStated) return { ...base, covered: true, evidence: { kind: "parking" } };

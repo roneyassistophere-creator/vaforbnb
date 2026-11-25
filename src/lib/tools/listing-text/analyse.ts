@@ -23,6 +23,10 @@ export type TextRules = {
   units: string[];
   location: { minuteWords: string[]; modes: string[]; joiners: string[]; transportWords: string[] };
   vague: { term: string; variants: string[]; suggestion: string }[];
+  /** Evidence straight after one of these words doesn't count ("no lift"). */
+  negations?: string[];
+  /** Words allowed between the negation and the evidence ("not a desk"). */
+  negationFillers?: string[];
 };
 
 export type Analysis = {
@@ -35,7 +39,26 @@ export type Analysis = {
   phrases: LocationPhrase[];
   vague: VagueHit[];
   sentences: Span[];
+  negations: string[];
+  negationFillers: string[];
 };
+
+/** Is the match at `start` straight after a negation ("no lift", "not a desk")? Only looks within the same line. */
+export function isNegated(text: string, start: number, negations: string[], fillers: string[] = []): boolean {
+  if (!negations.length) return false;
+  const before = text.slice(Math.max(0, start - 40), start).split("\n").pop() ?? "";
+  const w = (before.match(/[\p{L}'’]+/gu) ?? []).map((x) => x.toLowerCase());
+  const neg = new Set(negations.map((n) => n.toLowerCase()));
+  const last = w[w.length - 1];
+  if (!last) return false;
+  if (neg.has(last)) return true;
+  return fillers.map((f) => f.toLowerCase()).includes(last) && neg.has(w[w.length - 2] ?? "");
+}
+
+/** Like findPhrases, but skips negated matches ("no lift" isn't evidence of a lift). */
+export function findEvidence(a: Pick<Analysis, "text" | "negations" | "negationFillers">, phrases: string[]): Span[] {
+  return findPhrases(a.text, phrases).filter((s) => !isNegated(a.text, s.start, a.negations, a.negationFillers));
+}
 
 const L = "\\p{L}\\p{N}";
 const SEP = "[\\s\\-\\u2010-\\u2014]";
@@ -152,7 +175,7 @@ export function analyseText(text: string, rules: TextRules): Analysis {
     const v = variants.find((p) => p.x === key)?.v ?? rules.vague[0];
     return { ...s, term: v.term, suggestion: v.suggestion };
   });
-  return { text, units, mbps, phrases, vague, sentences: sents };
+  return { text, units, mbps, phrases, vague, sentences: sents, negations: rules.negations ?? [], negationFillers: rules.negationFillers ?? [] };
 }
 
 /** Does `text` contain `value` as whole words (ignoring case)? Returns the match. */

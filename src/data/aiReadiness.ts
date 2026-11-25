@@ -29,6 +29,11 @@ export const model = {
     transportWords: ["station", "tube", "underground", "metro", "tram", "bus stop", "airport"],
   },
 
+  /** Evidence straight after one of these words doesn’t count ("no lift", "without parking", "not a desk"). */
+  negations: ["no", "not", "without", "never", "isn't", "isn’t"],
+  /** Words allowed between a negation and the evidence ("not a desk", "without any parking"). */
+  negationFillers: ["a", "an", "any", "the"],
+
   /** Check E. Each entry counts once per occurrence; variants are treated the same. */
   vague: [
     { term: "cosy", variants: ["cosy", "cozy"], suggestion: "give the size (for example ‘12 m²’) or what makes it warm" },

@@ -41,6 +41,8 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
   const content = useMemo(() => readContent(figures), [figures]);
   const [inputs, setInputs] = useState<Inputs>(defaultInputs);
   const [ready, setReady] = useState(false);
+  // Today, read in the browser only (fills the month in example sentences).
+  const [now, setNow] = useState<Date | undefined>(undefined);
   const [scored, setScored] = useState(false);
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [open, setOpen] = useState(0);
@@ -71,6 +73,7 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
       setVisited(new Set([0, ...(Array.isArray(s.visited) ? s.visited.filter((n) => Number.isInteger(n) && n >= 0 && n < steps.length) : [])]));
     }
     setHistory(cleanHistory(deviceStorage.read(historyKey)));
+    setNow(new Date());
     setReady(true);
   }, []);
 
@@ -87,9 +90,9 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
   }, [ready, history]);
 
   /* ---- Derived: the score updates live once it has been shown ---- */
-  const live = useMemo(() => scoreListing(inputs, content), [inputs, content]);
+  const live = useMemo(() => scoreListing(inputs, content, now), [inputs, content, now]);
   const score = scored ? live : null;
-  const simulation = useMemo(() => (simQuery ? simulateSearch(simQuery, inputs, content, live.analysis) : null), [simQuery, inputs, content, live]);
+  const simulation = useMemo(() => (simQuery ? simulateSearch(simQuery, inputs, content, live.analysis, now) : null), [simQuery, inputs, content, live, now]);
   const last = history[history.length - 1];
   const change = !score ? "" : last && last.score !== score.total ? changeText(score.total - last.score) : changeText(changeSinceLast(history));
 

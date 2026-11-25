@@ -10,6 +10,7 @@ import {
   capsWords,
   containsPhrase,
   evaluateNeeds,
+  findEvidence,
   findPhrases,
   needsFor,
   sentences,
@@ -65,7 +66,7 @@ function placeInTitle(title: string, i: Inputs, model: Model): Span | null {
 }
 
 /** Tokens for fix examples, with bracketed placeholders for missing details. */
-export function exampleVars(i: Inputs, model: Model, limit: number, now: Date) {
+export function exampleVars(i: Inputs, model: Model, limit: number, now?: Date) {
   const p = model.placeholders;
   const type = model.propertyTypeWords.includes(i.propertyType) ? i.propertyType : p.type;
   return {
@@ -76,12 +77,13 @@ export function exampleVars(i: Inputs, model: Model, limit: number, now: Date) {
     type,
     Type: capitalise(type),
     limit,
-    month: now.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "Europe/London" }),
+    month: now ? now.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "Europe/London" }) : "[month]",
     n: 8,
   };
 }
 
-export function scoreListing(i: Inputs, content: Content, now: Date = new Date()): Score {
+/** `now` fills the month in example sentences; without it a "[month]" placeholder is used (keeps the server render stable). */
+export function scoreListing(i: Inputs, content: Content, now?: Date): Score {
   const { model, limits } = content;
   const P = model.points;
   const R = model.reasons;
@@ -290,7 +292,7 @@ export function quickWins(i: Inputs, a: Analysis, content: Content): QuickWin[] 
   const parkingKnown = ["free", "paid", "permit"].includes(i.parking);
   for (const am of model.amenities) {
     const phrases = am.evidence.filter((e) => !e.startsWith("@"));
-    const mentioned = !!findPhrases(a.text, phrases)[0] || (am.evidence.includes("@mbps") && a.mbps.length > 0);
+    const mentioned = !!findEvidence(a, phrases)[0] || (am.evidence.includes("@mbps") && a.mbps.length > 0);
     const ticked = i.amenities.includes(am.id) || (am.id === "parking" && parkingKnown);
     if (am.suggestTick && mentioned && !i.amenities.includes(am.id) && !(am.id === "parking" && i.parking === "none")) out.push({ id: `tick:${am.id}`, text: fill(Q.tick, { amenity: am.label }) });
     if (ticked && !mentioned) out.push({ id: `mention:${am.id}`, text: fill(Q.mention, { amenity: am.mention }) });

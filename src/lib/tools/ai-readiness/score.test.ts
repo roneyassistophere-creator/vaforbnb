@@ -246,6 +246,16 @@ describe("guest search simulator", () => {
     expect(s.notChecked).toEqual([]);
   });
 
+  it("negated evidence doesn't count: ‘no lift’ isn't step-free access, ‘no parking’ isn't a tick suggestion", () => {
+    const s = simulateSearch("step-free flat", make({}, "The flat is on the second floor with no lift."), content);
+    expect(s.rows[0]).toMatchObject({ id: "step-free", covered: false });
+    expect(simulateSearch("flat with a desk", make({}, "There is not a desk."), content).rows[0].covered).toBe(false);
+    expect(simulateSearch("flat with a lift", make({}, "Lift to every floor."), content).rows).toHaveLength(0);
+    expect(score(make({ parking: "none" }, "Sorry, no parking.")).quickWins.map((q) => q.id)).not.toContain("tick:parking");
+    expect(score(make({}, "No through traffic, so it's a quiet street.")).analysis.text).toBeTruthy();
+    expect(score(make({ guestTypes: ["remote"] }, "No through traffic here.")).needs.find((n) => n.id === "quiet")!.covered).toBe(true);
+  });
+
   it("amenity-only evidence is explained", () => {
     const s = simulateSearch("self check-in late arrival", make({ amenities: ["selfCheckin"] }, "A flat."), content);
     expect(s.rows[0].found).toBe("Found: Self check-in is ticked in your amenities");

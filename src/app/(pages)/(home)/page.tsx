@@ -10,6 +10,7 @@ import { PackageExplorer } from "./_components/PackageExplorer";
 import { PainPicker } from "./_components/PainPicker";
 import { WhoTabs } from "./_components/WhoTabs";
 import {
+  aiScorerHref,
   aiSearch,
   cases,
   compare,
@@ -295,7 +296,7 @@ export default function HomePage() {
               </h2>
               <p className="lead mb-6">{aiSearch.lead}</p>
               <div className="flex flex-wrap gap-3">
-                <SmartLink href={anchors.tool("ai-readiness-listing-scorer")} className="btn btn-violet">
+                <SmartLink href={aiScorerHref} className="btn btn-violet">
                   Check my AI readiness
                 </SmartLink>
                 <SmartLink href={anchors.service("listing")} className="btn btn-outline">

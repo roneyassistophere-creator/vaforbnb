@@ -146,7 +146,7 @@ test("report: only lead fields are sent, and the PDF is made on the device", asy
   await page.getByRole("button", { name: "Score my listing" }).click();
   await page.getByRole("button", { name: "Get the report (PDF)" }).click();
   const dialog = page.getByRole("dialog");
-  await dialog.getByLabel(/^Email/).fill("host@example.com");
+  await dialog.getByRole("textbox", { name: /^Email/ }).fill("host@example.com");
   await dialog.getByLabel("First name (optional)").fill("Sam");
   await dialog.getByRole("checkbox").check();
   const dl = page.waitForEvent("download");
@@ -177,10 +177,14 @@ test("from the kit: badge, and the next card saves the title for the title check
   expect(d.data.description).toBe("A flat.");
 });
 
-test("hub: first in Get more bookings, Coming soon, with the New badge", async ({ page }) => {
+test("hub: first in Get more bookings, live with the New badge, featured, and the kit opens it", async ({ page }) => {
   await page.goto("/free-tools?job=get-more-bookings");
+  await expect(page.getByRole("button", { name: /Get more bookings/ })).toHaveAttribute("aria-pressed", "true");
   const card = page.locator("#ai-readiness-listing-scorer");
-  await expect(card).toContainText("Coming soon");
+  await expect(card).not.toContainText("Coming soon");
+  await expect(card).toHaveAttribute("href", PATH);
+  await expect(page.locator("[data-featured-ai]")).toBeVisible();
+  await expect(page.getByRole("link", { name: "Start the kit →" }).nth(1)).toHaveAttribute("href", `${PATH}?kit=more-bookings`);
   await expect(card).toContainText("New");
   await expect(card).toContainText("Score + fixes");
   const names = await page.locator("#all [id] p.font-extrabold").allTextContents();

@@ -1,9 +1,13 @@
 import { brand } from "@/config/brand";
 import { prices, showPrice } from "@/config/pricing";
 import { anchors, routes } from "@/config/navigation";
+import { toolById, toolLink } from "@/content/tools/catalog";
 import type { IconName } from "@/lib/icons";
 import type { FaqEntry } from "@/lib/seo";
 import type { PackageKey } from "@/content/services";
+
+/** The AI-readiness scorer: its page once live, otherwise its hub card. */
+export const aiScorerHref = toolLink(toolById("ai-readiness-listing-scorer")!);
 
 /** All copy for the home page. */
 
@@ -61,7 +65,7 @@ export const pains: Pain[] = [
 export const freeToolLinks: Record<string, string> = {
   "Guest message templates": anchors.tool("guest-message-generator"),
   "Cleaning checklist": anchors.tool("cleaning-checklist-generator"),
-  "AI-readiness listing scorer": anchors.tool("ai-readiness-listing-scorer"),
+  "AI-readiness listing scorer": aiScorerHref,
   "Short-let profit calculator": anchors.tool("short-let-profit-calculator"),
   "UK compliance checker": anchors.complianceChecker,
   "Direct booking savings calculator": anchors.tool("direct-booking-savings"),
@@ -140,7 +144,7 @@ export const freebies: { t: string; s: string; tag: string; icon: IconName; href
   { t: "UK short-let rules hub", s: "Every UK rule in one place, checked monthly, with sources", tag: "Guide", icon: "book", href: routes.ukRules },
   { t: "UK compliance checker", s: "Which rules apply to your property, in 2 minutes", tag: "Tool", icon: "check", href: anchors.complianceChecker },
   { t: "Short-let profit calculator", s: "Your real profit and break-even", tag: "Tool", icon: "calc", href: anchors.tool("short-let-profit-calculator") },
-  { t: "AI-readiness listing scorer", s: "Is your listing ready for AI search?", tag: "Tool", icon: "spark", href: anchors.tool("ai-readiness-listing-scorer") },
+  { t: "AI-readiness listing scorer", s: "Is your listing ready for AI search?", tag: "Tool", icon: "spark", href: aiScorerHref },
   { t: "Free checklists", s: "Cleaning, safety, inventory and maintenance", tag: "Download", icon: "list", href: anchors.rulesChecklist },
   { t: "Monthly finance sheet", s: "A ready-made profit spreadsheet", tag: "Download", icon: "sheet", href: brand.downloads.financeSheet },
 ];

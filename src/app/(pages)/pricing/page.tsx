@@ -2,6 +2,7 @@ import { brand } from "@/config/brand";
 import { anchors, routes } from "@/config/navigation";
 import { prices, showPrice, singleServicePrices } from "@/config/pricing";
 import { cn } from "@/lib/cn";
+import { isLive, toolById, toolLink } from "@/content/tools/catalog";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Faq } from "@/components/ui/Faq";
 import { Dash, Tick } from "@/components/ui/Marks";
@@ -237,6 +238,11 @@ export default function PricingPage() {
               <SmartLink href={brand.links.bookCall} className="btn btn-white">
                 Book a 20-minute call
               </SmartLink>
+              {isLive(toolById("ai-readiness-listing-scorer")) && (
+                <SmartLink href={toolLink(toolById("ai-readiness-listing-scorer")!)} className="text-center text-sm font-bold text-ink underline underline-offset-2" data-scorer-link>
+                  Or check your AI readiness yourself (free tool) →
+                </SmartLink>
+              )}
             </div>
           </div>
         </div>

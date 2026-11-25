@@ -44,7 +44,7 @@ function foundText(r: NeedResult, text: string, i: Inputs, content: Content): Si
   return fill(L.foundAmenity, { amenity: am?.label ?? e.amenity });
 }
 
-export function simulateSearch(query: string, i: Inputs, content: Content, analysis?: Analysis, now: Date = new Date()): Simulation {
+export function simulateSearch(query: string, i: Inputs, content: Content, analysis?: Analysis, now?: Date): Simulation {
   const { model } = content;
   const S = model.simulator;
   const text = fullTextOf(i);
@@ -86,12 +86,14 @@ export function simulateSearch(query: string, i: Inputs, content: Content, analy
       notChecked.push(w);
       continue;
     }
+    // Covered when a minutes-to sentence names the place; the snippet shows the place itself.
     const p = a.phrases.find((ph) => findPhrases(ph.sentence.text, [w]).length > 0);
+    const at = p ? findPhrases(p.sentence.text, [w])[0] : null;
     rows.push({
       id: `place:${w}`,
       label: fill(S.labels.place, { place }),
       covered: !!p,
-      found: p ? snippet(text, p, 60) : null,
+      found: p && at ? snippet(text, { start: p.sentence.start + at.start, end: p.sentence.start + at.end, text: at.text }, 60) : null,
       suggestion: fill(S.labels.placeSuggestion, { n: 8, place }),
     });
   }

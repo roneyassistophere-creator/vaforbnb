@@ -89,7 +89,7 @@ export const tools: Tool[] = [
     ...T("bookings", "AI-readiness listing scorer", "Is my listing ready for Airbnb’s AI search?", 3, "Score + fixes", "All UK", 1, "ai search airbnb ai listing score description title seo ranking"),
     slug: aiReadinessSlug,
     href: aiReadinessPath,
-    status: "coming-soon",
+    status: "live",
     badge: "New",
     kit: "more-bookings",
     related: ["airbnb-title-checker", "ai-ready-description-builder", "photo-shot-list-planner"],

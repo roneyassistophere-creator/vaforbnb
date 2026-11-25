@@ -51,7 +51,7 @@ export function ScorePanel({
       <div className="flex flex-wrap items-center gap-5">
         <ProgressRing value={score.total} max={100} label={`${score.total} / 100`} color={score.band.fg} size={150} />
         <div className="grid min-w-[150px] flex-1 gap-2">
-          <BandPill band={score.band} className="self-start text-[14px]" />
+          <BandPill band={score.band} className="justify-self-start text-[14px]" />
           {change && (
             <p className={cn("m-0 text-sm font-extrabold", change.startsWith("+") ? "text-green" : change.startsWith("−") ? "text-brand-deep" : "text-muted")} data-change>
               {change}
