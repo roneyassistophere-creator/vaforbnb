@@ -39,13 +39,13 @@ async function fillMid(page: Page) {
   await page.getByRole("switch", { name: "Bed sizes are listed for every bedroom" }).check();
 }
 
-test("mid fixture scores 42 with fixes D, B, H; no listing text is sent", async ({ page }) => {
+test("mid fixture scores 40 with fixes D, B, H; no listing text is sent (v3: the town in the title earns no place point)", async ({ page }) => {
   const seen = watch(page);
   await open(page);
   await fillMid(page);
   await page.getByRole("button", { name: "Score my listing" }).click();
   const panel = page.locator("[data-score-panel]");
-  await expect(panel).toContainText("42 / 100");
+  await expect(panel).toContainText("40 / 100");
   await expect(panel.locator("[data-band]")).toHaveText("Needs work");
   await expect(page.locator("[data-fix]")).toHaveCount(3);
   expect(await page.locator("[data-fix]").evaluateAll((els) => els.map((e) => e.getAttribute("data-fix")))).toEqual(["D", "B", "H"]);
@@ -54,7 +54,7 @@ test("mid fixture scores 42 with fixes D, B, H; no listing text is sent", async 
   // Live update once scored: adding a fact raises B.
   await step(page, 0).click();
   await page.getByLabel(/^Listing description/).fill("Spacious flat with WiFi and parking. 10 minutes to the city centre. Wi-Fi is 300 Mbps.");
-  await expect(panel).not.toContainText("42 / 100");
+  await expect(panel).not.toContainText("40 / 100");
   await expect(panel.locator("[data-change]")).toContainText("since your last score");
 
   // A bar opens the breakdown at that check.

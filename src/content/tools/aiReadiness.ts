@@ -80,5 +80,8 @@ export const copy = {
     audit: "Get a free AI-readiness audit",
     auditShare: "Include my score, band and town in the audit form (no listing text)",
     auditSaved: "Saved for the audit form on this device.",
+    improveTitle: "Improve my title",
+    planPhotos: "Plan my photos and captions",
+    fromTitle: "Your title came across from the Airbnb title checker. Add your description to score your whole listing.",
   },
 };

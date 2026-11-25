@@ -2,6 +2,8 @@ import type { Figure } from "@/lib/tools/figures";
 import { countries, exemptNationalities } from "./countries";
 import * as ai from "./aiReadiness";
 import * as hr from "./houseRules";
+import * as tc from "./titleChecker";
+import * as ps from "./photoShotList";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -124,6 +126,8 @@ export const figuresSeed: Figure[] = [
   ...guestRegister(),
   ...houseRules(),
   ...aiReadiness(),
+  ...titleChecker(),
+  ...photoShotList(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -143,6 +147,53 @@ function aiReadiness(): Figure[] {
     row("aiReadiness.model", { json: ai.model }, `AI-readiness scorer: scoring model v${ai.model.version} (patterns, word lists, needs, guest types, triggers, points, bands, templates)`, ours, true),
     row("aiReadiness.limits", { json: ai.limits }, "AI-readiness scorer: title and description section character limits", airbnb, true),
     row("aiReadiness.source", { json: ai.source }, "AI-readiness scorer: Airbnb AI search announcement", { sourceTitle: ai.source.title, sourceUrl: ai.source.url }, true),
+  ];
+}
+
+/** Airbnb title checker: limit, word lists, patterns, separators, templates and messages (structured content). */
+function titleChecker(): Figure[] {
+  const ours = { sourceTitle: "VA for BnB title checker rules (editable)", sourceUrl: null };
+  const airbnb = { sourceTitle: tc.source.title, sourceUrl: tc.source.url };
+  const row = (key: string, value: Figure["value"], unit: string | null, label: string, src: { sourceTitle: string; sourceUrl: string | null }, verify: boolean): Figure => ({
+    key,
+    value,
+    unit,
+    label,
+    ...src,
+    lastChecked: "2026-11-25",
+    verify,
+  });
+  // The limit and counting method are their own rows (each with a VERIFY flag), so they're left out of the rules.
+  const { limit, counting, ...rest } = tc.rules;
+  return [
+    row("titleChecker.limit", limit, "characters", "Title checker: Airbnb's recommended maximum title length (fewer than this is advised; longer titles get cut off)", airbnb, true),
+    row("titleChecker.counting", counting, null, "Title checker: how characters are counted (graphemes = as people see them, an emoji counts as 1)", airbnb, true),
+    row("titleChecker.rules", { json: rest }, null, `Title checker: rules v${tc.rules.version} (word lists, patterns, separators, builder templates, messages)`, ours, false),
+    row("titleChecker.source", { json: tc.source }, null, "Title checker: Airbnb's title guidance", airbnb, true),
+    row("titleChecker.contactSource", { json: tc.contactSource }, null, "Title checker: source for the no-contact-details check", { sourceTitle: tc.contactSource.title, sourceUrl: tc.contactSource.url }, true),
+  ];
+}
+
+/** Photo shot list planner: order rules, counts, shot/caption/light/season/prep content (structured), plus the VERIFY limits. */
+function photoShotList(): Figure[] {
+  const ours = { sourceTitle: "VA for BnB photo shot list rules (editable)", sourceUrl: null };
+  const airbnb = { sourceTitle: ps.source.title, sourceUrl: ps.source.url };
+  const row = (key: string, value: Figure["value"], unit: string | null, label: string, src: { sourceTitle: string; sourceUrl: string | null }, verify: boolean): Figure => ({
+    key,
+    value,
+    unit,
+    label,
+    ...src,
+    lastChecked: "2026-11-25",
+    verify,
+  });
+  // The caption limit and photo-count range are their own rows (each with a VERIFY flag), so they're left out of the rules.
+  const { captionLimit, photoCount, ...rest } = ps.rules;
+  return [
+    row("photoShotList.rules", { json: rest }, null, `Photo shot list planner: rules v${ps.rules.version} (order lists, guest priorities, shots per item, shot, staging, caption, light, season and prep content)`, ours, false),
+    row("photoShotList.captionLimit", captionLimit, "characters", "Photo shot list planner: caption length shown in the counter (Airbnb doesn't publish a limit)", airbnb, true),
+    row("photoShotList.photoCount", { json: photoCount }, null, "Photo shot list planner: recommended photo range (warnings outside it), Airbnb's minimum, and the typical range in the FAQ", airbnb, true),
+    row("photoShotList.source", { json: ps.source }, null, "Photo shot list planner: Airbnb's photo guidance", airbnb, true),
   ];
 }
 

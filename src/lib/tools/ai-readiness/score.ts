@@ -1,5 +1,5 @@
 /**
- * AI-readiness score (model v2). Pure and testable: every word list, point
+ * AI-readiness score (model v3). Pure and testable: every word list, point
  * value, band and template comes from the stored model. Scores readiness
  * (clear, specific facts), not ranking.
  */
@@ -18,6 +18,8 @@ import {
   type Analysis,
   type NeedResult,
   type Span,
+  countChars,
+  unitsRegex,
 } from "@/lib/tools/listing-text";
 import { capitalise, checkIds, fill, type CheckId, type Content, type Model } from "./content";
 import { descriptionOf, fullTextOf, sectionIds, type Inputs } from "./inputs";
@@ -42,15 +44,14 @@ export type Score = {
   descriptionLength: number;
 };
 
-const len = (s: string) => [...s].length;
 const quote = (s: string) => `‘${s}’`;
 const list = (spans: Span[], n = 4) => spans.slice(0, n).map((s) => quote(s.text)).join(", ") + (spans.length > n ? "…" : "");
 
 export const bandFor = (total: number, model: Model): Band => [...model.bands].sort((a, b) => a.min - b.min).filter((b) => total >= b.min).pop() ?? model.bands[0];
 
-/** Town, station or landmark in the title (a trailing transport word such as "station" is optional). */
+/** Station or landmark in the title (a trailing transport word such as "station" is optional). The town doesn't count: search already shows it. */
 function placeInTitle(title: string, i: Inputs, model: Model): Span | null {
-  for (const v of [i.town, i.station, i.landmark]) {
+  for (const v of [i.station, i.landmark]) {
     const value = v.trim();
     if (!value) continue;
     const hit = containsPhrase(title, value);
@@ -72,7 +73,7 @@ export function exampleVars(i: Inputs, model: Model, limit: number, now?: Date) 
   return {
     station: i.station.trim() || p.station,
     landmark: i.landmark.trim() || p.landmark,
-    place: i.station.trim() || i.landmark.trim() || i.town.trim() || p.place,
+    place: i.station.trim() || i.landmark.trim() || p.place,
     town: i.town.trim() || p.town,
     type,
     Type: capitalise(type),
@@ -85,6 +86,7 @@ export function exampleVars(i: Inputs, model: Model, limit: number, now?: Date) 
 /** `now` fills the month in example sentences; without it a "[month]" placeholder is used (keeps the server render stable). */
 export function scoreListing(i: Inputs, content: Content, now?: Date): Score {
   const { model, limits } = content;
+  const len = (s: string) => countChars(s, content.counting);
   const P = model.points;
   const R = model.reasons;
   const text = fullTextOf(i);
@@ -117,7 +119,8 @@ export function scoreListing(i: Inputs, content: Content, now?: Date): Score {
     const place = placeInTitle(title, i, model);
     reasons.push(place ? { text: fill(R.titlePlace, { word: place.text }), points: P.A.place } : { text: R.titleNoPlace, points: 0 });
     if (!place) miss("A", "place");
-    const feature = title.match(/\d+/)?.[0] ?? findPhrases(title, model.titleFeatureWords)[0]?.text;
+    // A key amenity, or a number with a unit ("8 min", "45 m²"). A bare number such as "2-bed" doesn't count.
+    const feature = findPhrases(title, model.titleFeatureWords)[0]?.text ?? title.match(unitsRegex(model.units))?.[0];
     reasons.push(feature ? { text: fill(R.titleFeature, { word: feature }), points: P.A.feature } : { text: R.titleNoFeature, points: 0 });
     if (!feature) miss("A", "feature");
     put("A", reasons);
@@ -287,6 +290,7 @@ function topFixes(
 /** Mismatches between text and amenities, over-length fields and a missing Wi-Fi speed. No points. */
 export function quickWins(i: Inputs, a: Analysis, content: Content): QuickWin[] {
   const { model, limits } = content;
+  const len = (s: string) => countChars(s, content.counting);
   const Q = model.quickWins;
   const out: QuickWin[] = [];
   const parkingKnown = ["free", "paid", "permit"].includes(i.parking);

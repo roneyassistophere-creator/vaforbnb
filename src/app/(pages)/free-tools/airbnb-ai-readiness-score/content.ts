@@ -38,7 +38,7 @@ export const howItWorks = {
     "Your title and description are checked for eight things. Every pattern, word list and point value is stored content we can update without changing the tool, and the model version is shown in the changelog.",
   /** What each check looks for, in plain English (points come from the stored model). */
   checks: {
-    A: "Title within the limit, says what the place is, names your town, station or landmark, and has a number or key amenity.",
+    A: "Title within the limit, says what the place is, names a station or landmark (not the town, which search already shows), and has a key amenity or a number with a unit (not the bedroom count).",
     B: "Numbers with units: Mbps, minutes, m², sq ft, metres, miles or km. Three or more scores full points.",
     C: "‘[n] minutes to [place]’ phrases, plus a bonus when one names a station, tube, tram, metro, bus stop or airport.",
     D: "Evidence for what your guest types ask for (or the core needs: fast Wi-Fi, parking, self check-in, a kitchen).",
@@ -61,6 +61,7 @@ export const limits = {
 export const related = { title: "Related tools", ids: ["airbnb-title-checker", "ai-ready-description-builder", "photo-shot-list-planner"] };
 
 export const changelogNotes: { date: string; note: string }[] = [
+  { date: "2026-11-25", note: "Scoring v3: the title check no longer rewards the town or a bedroom count, which search already shows. It now matches the Airbnb title checker." },
   { date: "2026-11-25", note: "First version: readiness score, top three fixes, guest search simulator, highlighted text and score history." },
 ];
 

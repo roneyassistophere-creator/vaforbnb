@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
-import { copy } from "@/content/tools/aiReadiness";
+import { copy, toolSlug } from "@/content/tools/aiReadiness";
+import { isLive, toolById, toolLink } from "@/content/tools/catalog";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import { fill, type CheckId, type Content, type HistoryEntry, type Score, type SimRow, type Simulation } from "@/lib/tools/ai-readiness";
 import type { Analysis } from "@/lib/tools/listing-text";
@@ -28,6 +30,8 @@ export function ResultTabs({
   focusCheck,
   history,
   onClearHistory,
+  onImproveTitle,
+  onPlanPhotos,
 }: {
   tab: ResultTab;
   onTab: (t: ResultTab) => void;
@@ -42,6 +46,10 @@ export function ResultTabs({
   focusCheck: CheckId | null;
   history: HistoryEntry[];
   onClearHistory: () => void;
+  /** Saves the title for the Airbnb title checker before "Improve my title" opens it. */
+  onImproveTitle?: () => void;
+  /** Saves the listing details for the Photo shot list planner before "Plan my photos and captions" opens it. */
+  onPlanPhotos?: () => void;
 }) {
   return (
     <section aria-label="Your results" className="rounded-[20px] border border-line bg-white" id="air-results">
@@ -69,10 +77,10 @@ export function ResultTabs({
         ))}
       </div>
       <div id={`air-tabpanel-${tab}`} role="tabpanel" aria-labelledby={`air-tab-${tab}`} className="p-4 md:p-6" tabIndex={-1}>
-        {tab === "fixes" && <FixesTab score={score} ticked={ticked} onTick={onTick} onFixCopied={onFixCopied} />}
+        {tab === "fixes" && <FixesTab score={score} ticked={ticked} onTick={onTick} onFixCopied={onFixCopied} onImproveTitle={onImproveTitle} onPlanPhotos={onPlanPhotos} />}
         {tab === "simulator" && <SimulatorTab content={content} query={simQuery} simulation={simulation} onSimulate={onSimulate} />}
         {tab === "text" && <HighlightedText analysis={score.analysis} content={content} />}
-        {tab === "breakdown" && <Breakdown score={score} focus={focusCheck} />}
+        {tab === "breakdown" && <Breakdown score={score} focus={focusCheck} onImproveTitle={onImproveTitle} />}
         {tab === "history" && <History history={history} onClear={onClearHistory} />}
       </div>
     </section>
@@ -81,7 +89,59 @@ export function ResultTabs({
 
 /* ---------------- Fixes ---------------- */
 
-function FixesTab({ score, ticked, onTick, onFixCopied }: { score: Score; ticked: Set<string>; onTick: (id: string) => void; onFixCopied: (c: CheckId) => void }) {
+/** "Improve my title": opens the Airbnb title checker with this title (saved on this device). Shown once the checker is live. */
+function ImproveTitle({ onClick, className }: { onClick?: () => void; className?: string }) {
+  const checker = toolById("airbnb-title-checker");
+  if (!checker || !isLive(checker)) return null;
+  return (
+    <a
+      href={`${toolLink(checker)}?from=${toolSlug}`}
+      onClick={() => {
+        onClick?.();
+        track("next_step_clicked", toolSlug, { type: "title-checker" });
+      }}
+      className={cn("btn btn-coral min-h-11", className)}
+      data-improve-title
+    >
+      {copy.handoff.improveTitle} →
+    </a>
+  );
+}
+
+/** "Plan my photos and captions": opens the Photo shot list planner with these details (saved on this device). Shown once the planner is live. */
+function PlanPhotos({ onClick }: { onClick?: () => void }) {
+  const planner = toolById("photo-shot-list-planner");
+  if (!planner || !isLive(planner)) return null;
+  return (
+    <a
+      href={`${toolLink(planner)}?from=${toolSlug}`}
+      onClick={() => {
+        onClick?.();
+        track("next_step_clicked", toolSlug, { type: "photo-planner" });
+      }}
+      className="btn btn-coral min-h-11"
+      data-plan-photos
+    >
+      {copy.handoff.planPhotos} →
+    </a>
+  );
+}
+
+function FixesTab({
+  score,
+  ticked,
+  onTick,
+  onFixCopied,
+  onImproveTitle,
+  onPlanPhotos,
+}: {
+  score: Score;
+  ticked: Set<string>;
+  onTick: (id: string) => void;
+  onFixCopied: (c: CheckId) => void;
+  onImproveTitle?: () => void;
+  onPlanPhotos?: () => void;
+}) {
   return (
     <div className="grid gap-6">
       {score.fixes.length ? (
@@ -110,8 +170,10 @@ function FixesTab({ score, ticked, onTick, onFixCopied }: { score: Score; ticked
                     <span className="mb-0.5 block text-[12px] font-extrabold tracking-[0.6px] text-muted uppercase">{copy.fixes.example}</span>
                     {f.example}
                   </p>
-                  <div className="flex flex-wrap">
+                  <div className="flex flex-wrap gap-2">
                     <CopyButton getText={() => f.example} label={copy.fixes.copyExample} className="min-h-11" onCopied={() => onFixCopied(f.check)} />
+                    {f.check === "A" && <ImproveTitle onClick={onImproveTitle} />}
+                    {f.check === "G" && <PlanPhotos onClick={onPlanPhotos} />}
                   </div>
                 </div>
               )}
@@ -367,7 +429,7 @@ export function HighlightedText({ analysis, content }: { analysis: Analysis; con
 
 /* ---------------- Breakdown ---------------- */
 
-function Breakdown({ score, focus }: { score: Score; focus: CheckId | null }) {
+function Breakdown({ score, focus, onImproveTitle }: { score: Score; focus: CheckId | null; onImproveTitle?: () => void }) {
   useEffect(() => {
     if (!focus) return;
     const el = document.getElementById(`air-check-${focus}`);
@@ -398,6 +460,7 @@ function Breakdown({ score, focus }: { score: Score; focus: CheckId | null }) {
               </li>
             ))}
           </ul>
+          {c.id === "A" && <ImproveTitle onClick={onImproveTitle} className="mt-3" />}
         </li>
       ))}
     </ol>

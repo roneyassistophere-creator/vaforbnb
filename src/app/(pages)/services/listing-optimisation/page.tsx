@@ -3,6 +3,9 @@ import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { SmartLink } from "@/components/ui/SmartLink";
+import { isToolLive, toolBySlug, toolLink } from "@/content/tools/catalog";
+import { toolSlug as titleCheckerSlug } from "@/content/tools/titleCheckerId";
+import { toolSlug as photoShotListSlug } from "@/content/tools/photoShotListId";
 import { AiSimulator, AuditForm, ReadinessCheck } from "./_components/Interactive";
 import {
   amenities,
@@ -494,6 +497,16 @@ export default function ListingOptimisationPage() {
                 ))}
               </div>
             </div>
+            {isToolLive(photoShotListSlug) && (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[18px] border border-line bg-white px-6 py-5" data-photo-planner-link>
+                <p className="m-0 text-[15px] leading-[1.6] text-ink-copy">
+                  <strong className="text-ink">Plan your own shoot.</strong> Our free planner gives you your photo order, a shot list for every room and captions with your real details.
+                </p>
+                <SmartLink href={toolLink(toolBySlug(photoShotListSlug)!)} className="btn btn-coral rounded-full">
+                  Plan my photos (free tool) →
+                </SmartLink>
+              </div>
+            )}
             <Src>Source: Airbnb Resource Centre, How to organise listing photos into a home tour.</Src>
           </div>
         </section>
@@ -537,6 +550,16 @@ export default function ListingOptimisationPage() {
                 market” or “10 min to the racecourse”, then switch back afterwards.
               </p>
             </div>
+            {isToolLive(titleCheckerSlug) && (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[18px] border border-line bg-white px-6 py-5" data-title-checker-link>
+                <p className="m-0 text-[15px] leading-[1.6] text-ink-copy">
+                  <strong className="text-ink">Check your own title in a minute.</strong> Our free checker counts characters, flags capitals, emoji and repeated details, and suggests titles that fit.
+                </p>
+                <SmartLink href={toolLink(toolBySlug(titleCheckerSlug)!)} className="btn btn-coral rounded-full">
+                  Check my title (free tool) →
+                </SmartLink>
+              </div>
+            )}
             <Src>Sources: Airbnb, Guidelines for writing your listing title; IntelliHost, title length study (US data).</Src>
           </div>
         </section>

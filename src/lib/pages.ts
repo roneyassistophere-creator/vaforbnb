@@ -12,6 +12,8 @@ import { seo as visitorLevyCalculator } from "@/app/(pages)/free-tools/uk-visito
 import { seo as guestRegisterBuilder } from "@/app/(pages)/free-tools/guest-register-template/seo";
 import { seo as houseRulesGenerator } from "@/app/(pages)/free-tools/house-rules-generator/seo";
 import { seo as aiReadinessScore } from "@/app/(pages)/free-tools/airbnb-ai-readiness-score/seo";
+import { seo as titleChecker } from "@/app/(pages)/free-tools/airbnb-title-checker/seo";
+import { seo as photoShotList } from "@/app/(pages)/free-tools/airbnb-photo-shot-list/seo";
 import { seo as ukRules } from "@/app/(pages)/uk-short-let-rules/seo";
 import { seo as guestCommunication } from "@/app/(pages)/services/guest-communication/seo";
 import { seo as listingOptimisation } from "@/app/(pages)/services/listing-optimisation/seo";
@@ -40,6 +42,8 @@ export const allPages: PageSeo[] = [
   guestRegisterBuilder,
   houseRulesGenerator,
   aiReadinessScore,
+  titleChecker,
+  photoShotList,
   ukRules,
   // Service pages
   guestCommunication,
