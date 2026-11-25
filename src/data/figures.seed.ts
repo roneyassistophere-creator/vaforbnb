@@ -7,6 +7,7 @@ import * as ps from "./photoShotList";
 import * as db from "./descriptionBuilder";
 import * as ls from "./longStay";
 import * as evd from "./events";
+import * as pc from "./profitCalculator";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -134,6 +135,7 @@ export const figuresSeed: Figure[] = [
   ...descriptionBuilder(),
   ...longStay(),
   ...eventCalendar(),
+  ...profitCalculator(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -491,5 +493,53 @@ function businessRates(): Figure[] {
       sourceTitle: "Welsh Government: council tax premiums on second homes",
       sourceUrl: "https://www.gov.wales",
     }),
+  ];
+}
+
+/**
+ * Short-let profit calculator: model v2 (constants, levers, examples, shapes,
+ * insight wording) plus the official rates and thresholds it uses, each with
+ * a source and a VERIFY flag. Shared figures it also reads: fees.airbnbHostOnlyPercent,
+ * fees.directCardPercent and vat.standardRate.
+ */
+function profitCalculator(): Figure[] {
+  const d = "2026-11-26";
+  const ours = { sourceTitle: "VA for BnB profit calculator (editable)", sourceUrl: null };
+  const hmrc = (title: string, url: string) => ({ sourceTitle: title, sourceUrl: url });
+  return [
+    { key: "profit.model", value: { json: pc.model }, unit: null, label: `Profit calculator: model v${pc.model.version} (days per month, thin-margin line, lever sizes, scenario limits)`, ...ours, lastChecked: d, verify: false },
+    { key: "profit.content", value: { json: { defaults: pc.defaults, examples: pc.examples, shapes: pc.shapes, insights: pc.insights, leverText: pc.leverText } }, unit: null, label: "Profit calculator: starting values, examples, example shapes, insight rules and wording", ...ours, lastChecked: d, verify: false },
+    { key: "fees.airbnbSplitHostPercent", value: 3, unit: "%", label: "Airbnb split-fee model: host service fee (preset in the profit calculator)", sourceTitle: "Airbnb Help Centre: service fees", sourceUrl: "https://www.airbnb.co.uk/help/article/1857", lastChecked: d, verify: true },
+    { key: "fees.directFixedPerBooking", value: 0.2, unit: "£", label: "Direct booking card processing: fixed fee per payment (typical UK online card rate, preset)", ...ours, lastChecked: d, verify: true },
+    {
+      key: "tax.propertyIncome",
+      value: { json: { current: { basic: 20, higher: 40, additional: 45 }, from2027: { basic: 22, higher: 42, additional: 47 }, from2027Date: "2027-04-06", financeCredit: { current: 20, from2027: 22 } } },
+      unit: "%",
+      label: "Property income tax rates (England, Wales and NI) now and from 6 April 2027, and the finance cost (mortgage interest) tax credit rate. VERIFY the 2027 credit rate.",
+      ...hmrc("GOV.UK: Changes to tax rates for property, savings and dividend income", "https://www.gov.uk/government/publications/changes-to-tax-rates-for-property-savings-and-dividend-income"),
+      lastChecked: d,
+      verify: true,
+    },
+    {
+      key: "tax.scotland",
+      value: { json: { taxYear: "2026 to 2027", bands: [{ id: "starter", label: "Starter", rate: 19 }, { id: "basic", label: "Basic", rate: 20 }, { id: "intermediate", label: "Intermediate", rate: 21 }, { id: "higher", label: "Higher", rate: 42 }, { id: "advanced", label: "Advanced", rate: 45 }, { id: "top", label: "Top", rate: 48 }], financeCredit: 20 } },
+      unit: "%",
+      label: "Scottish income tax band rates (used for property income in Scotland), and the finance cost credit rate",
+      ...hmrc("GOV.UK: Scottish Income Tax rates", "https://www.gov.uk/scottish-income-tax"),
+      lastChecked: d,
+      verify: true,
+    },
+    { key: "tax.rentARoomThreshold", value: 7500, unit: "£", label: "Rent a Room relief: tax-free threshold a year (halved if the income is shared)", ...hmrc("GOV.UK: Rent a room in your home", "https://www.gov.uk/rent-room-in-your-home"), lastChecked: d, verify: false },
+    { key: "vat.registrationThreshold", value: 90000, unit: "£", label: "VAT registration threshold (VAT-taxable turnover in any rolling 12 months)", ...hmrc("GOV.UK: How VAT works, when to register", "https://www.gov.uk/vat-registration/when-to-register"), lastChecked: d, verify: true },
+    { key: "vat.closePercent", value: 80, unit: "%", label: "Profit calculator: say “getting close to the VAT threshold” from this share of it", ...ours, lastChecked: d, verify: false },
+    {
+      key: "tax.mtdThresholds",
+      value: { json: [{ min: 50000, from: "from April 2026" }, { min: 30000, from: "from April 2027" }, { min: 20000, from: "from April 2028" }] },
+      unit: "£",
+      label: "Making Tax Digital for Income Tax: qualifying income thresholds and start dates (property plus self-employment income)",
+      ...hmrc("GOV.UK: Making Tax Digital for Income Tax", "https://www.gov.uk/guidance/check-if-youre-eligible-for-making-tax-digital-for-income-tax"),
+      lastChecked: d,
+      verify: true,
+    },
   ];
 }

@@ -143,7 +143,7 @@ export const aiSearch = {
 export const freebies: { t: string; s: string; tag: string; icon: IconName; href: string }[] = [
   { t: "UK short-let rules hub", s: "Every UK rule in one place, checked monthly, with sources", tag: "Guide", icon: "book", href: routes.ukRules },
   { t: "UK compliance checker", s: "Which rules apply to your property, in 2 minutes", tag: "Tool", icon: "check", href: anchors.complianceChecker },
-  { t: "Short-let profit calculator", s: "Your real profit and break-even", tag: "Tool", icon: "calc", href: anchors.tool("short-let-profit-calculator") },
+  { t: "Short-let profit calculator", s: "Your real profit and break-even", tag: "Tool", icon: "calc", href: toolLink(toolById("short-let-profit-calculator")!) },
   { t: "AI-readiness listing scorer", s: "Is your listing ready for AI search?", tag: "Tool", icon: "spark", href: aiScorerHref },
   { t: "Free checklists", s: "Cleaning, safety, inventory and maintenance", tag: "Download", icon: "list", href: anchors.rulesChecklist },
   { t: "Monthly finance sheet", s: "A ready-made profit spreadsheet", tag: "Download", icon: "sheet", href: brand.downloads.financeSheet },

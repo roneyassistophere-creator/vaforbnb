@@ -15,6 +15,7 @@ import {
   londonFromCounter,
   parseForm,
   rateFromProfit,
+  formFromProfit,
   readContent,
   removeScenario,
   resultText,
@@ -230,6 +231,9 @@ describe("text, copy and imports", () => {
   it("imports: nightly rate from the profit calculator, London flag from the counter", () => {
     expect(rateFromProfit({ nightlyRate: 120 })).toBe(120);
     expect(rateFromProfit({ nightlyRate: 0 })).toBeNull();
+    // The profit calculator's hand-off also carries the turnover cost, platform fee, occupancy and stay.
+    expect(formFromProfit({ nightlyRate: 100, turnoverCost: 50, platformFeePercent: 15.5, occupancyPercent: 60, averageStay: 3 })).toEqual({ nightlyRate: "100", turnoverCost: "50", feePercent: "15.5", occupancyPercent: "60", averageStay: "3" });
+    expect(formFromProfit({ nightlyRate: 100, platformFeePercent: 140 })).toEqual({ nightlyRate: "100" });
     expect(rateFromProfit("x")).toBeNull();
     expect(londonFromCounter({ london: true })).toBe(true);
     expect(londonFromCounter({})).toBe(false);

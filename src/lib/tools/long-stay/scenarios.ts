@@ -126,5 +126,20 @@ export function rateFromProfit(data: unknown): number | null {
   return typeof r === "number" && Number.isFinite(r) && r >= 1 ? Math.round(r * 100) / 100 : null;
 }
 
+/** Everything the long-stay form can take from the profit calculator's hand-off: rate, turnover cost, platform fee, occupancy and stay. */
+export function formFromProfit(data: unknown): Partial<Record<"nightlyRate" | "turnoverCost" | "feePercent" | "occupancyPercent" | "averageStay", string>> {
+  if (!isObj(data)) return {};
+  const out: Partial<Record<"nightlyRate" | "turnoverCost" | "feePercent" | "occupancyPercent" | "averageStay", string>> = {};
+  const rate = rateFromProfit(data);
+  if (rate !== null) out.nightlyRate = String(rate);
+  const ok = (v: unknown, lo: number, hi: number) => typeof v === "number" && Number.isFinite(v) && v >= lo && v <= hi;
+  const r2 = (v: number) => String(Math.round(v * 100) / 100);
+  if (ok(data.turnoverCost, 0, 10000)) out.turnoverCost = r2(data.turnoverCost as number);
+  if (ok(data.platformFeePercent, 0, 100)) out.feePercent = r2(data.platformFeePercent as number);
+  if (ok(data.occupancyPercent, 0, 100)) out.occupancyPercent = r2(data.occupancyPercent as number);
+  if (ok(data.averageStay, 1, 365)) out.averageStay = r2(data.averageStay as number);
+  return out;
+}
+
 /** The London flag from the London 90-night counter's hand-off ("london-flag"). */
 export const londonFromCounter = (data: unknown): boolean => isObj(data) && data.london === true;

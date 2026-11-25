@@ -18,7 +18,7 @@ import {
   headline,
   londonFromCounter,
   parseForm,
-  rateFromProfit,
+  formFromProfit,
   readContent,
   removeScenario,
   resultText,
@@ -64,11 +64,18 @@ export function LongStayTool({ figures }: { figures: Figures }) {
     // Shared device format: the nightly rate from the profit calculator, and the London flag from the 90-night counter.
     // Never overwrites what the host already filled in.
     const profit = readHandoffData("profit-inputs", (x) => x);
-    const rate = profit ? rateFromProfit(profit.data) : null;
-    if (profit && rate !== null && profit.createdAt !== at && next.nightlyRate === d.nightlyRate) {
-      imp = { source: profit.source, prev: next };
-      next = { ...next, nightlyRate: String(rate) };
-      at = profit.createdAt;
+    if (profit && profit.createdAt !== at) {
+      // Only fields the host hasn't changed from the starting values.
+      const from = formFromProfit(profit.data);
+      const patch: Partial<typeof next> = {};
+      const keys = ["nightlyRate", "turnoverCost", "feePercent", "occupancyPercent", "averageStay"] as const;
+      for (const k of keys) if (from[k] !== undefined && next[k] === d[k]) patch[k] = from[k];
+      if (patch.feePercent !== undefined) patch.feePreset = "custom";
+      if (Object.keys(patch).length) {
+        imp = { source: profit.source, prev: next };
+        next = { ...next, ...patch };
+        at = profit.createdAt;
+      }
     }
     const flag = readHandoffData("london-flag", (x) => x);
     if (flag && londonFromCounter(flag.data) && !next.london && flag.createdAt !== at) {

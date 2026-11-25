@@ -4,6 +4,7 @@ import type { FaqEntry } from "@/lib/seo";
 import { toolPath as compliancePath, toolSlug as complianceSlug } from "@/content/tools/complianceChecker";
 import { toolPath as aiReadinessPath, toolSlug as aiReadinessSlug } from "@/content/tools/aiReadinessId";
 import { isLive as liveTool, toolBySlug } from "@/content/tools/catalog";
+import { toolPath as profitPath, toolSlug as profitSlug } from "@/content/tools/profitId";
 
 /** All copy and data for /free-tools. */
 
@@ -20,7 +21,7 @@ export const hero = {
 export const kits = [
   { tag: "New host kit", tint: "#E8EEF3", fg: "#14212B", t: "Set up the right way", d: "Your first short let, or a check you’ve covered the basics.", steps: ["Compliance checker", "Profit calculator", "House rules generator", "Welcome guide builder", "Certificate reminders"], href: compliancePath, toolSlug: complianceSlug },
   { tag: "Get more bookings kit", tint: "#FDECEC", fg: "#8E2729", t: "Fill the gaps", d: "When your calendar has too many empty nights.", steps: ["AI-readiness scorer", "Title checker", "Description builder", "Photo shot list planner", "Long-stay discount calculator"], href: liveTool(toolBySlug(aiReadinessSlug)) ? `${aiReadinessPath}?kit=more-bookings` : "#ai-readiness-listing-scorer", toolSlug: aiReadinessSlug },
-  { tag: "Growing host kit", tint: "#F0ECF8", fg: "#5B3FA0", t: "Run it like a business", d: "Several properties and you need systems.", steps: ["Hosting time calculator", "Booking performance", "Direct booking savings", "Linen and supplies calculator"], href: "#hosting-time-calculator", toolSlug: "" },
+  { tag: "Growing host kit", tint: "#F0ECF8", fg: "#5B3FA0", t: "Run it like a business", d: "Several properties and you need systems.", steps: ["Profit calculator", "Hosting time calculator", "Booking performance", "Direct booking savings", "Linen and supplies calculator"], href: liveTool(toolBySlug(profitSlug)) ? `${profitPath}?kit=growing` : "#short-let-profit-calculator", toolSlug: profitSlug },
 ];
 
 export const trust: { h: string; t: string; icon: IconName }[] = [

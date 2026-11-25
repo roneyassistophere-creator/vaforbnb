@@ -67,7 +67,7 @@ export const personas: Persona[] = [
     pains: ["Operations eat the time you need for deals", "Standards slip as units are added", "No clear view of profit per unit"],
     take: [{ h: "Multi-channel guest care", t: "Airbnb, Booking.com, direct and more." }, { h: "Turnovers across units", t: "Cleaners, linen and maintenance coordinated." }, { h: "P&L per unit", t: "Monthly, every booking and bill." }, { h: "SOPs", t: "The same standard in every unit." }],
     services: ["Guest communication", "Cleaning coordination", "Finance check", "Systemise your business"],
-    tools: [tool("Short vs long let comparison", "short-let-vs-long-let"), tool("Long-stay discount calculator", "long-stay-discount-calculator"), tool("Booking performance tracker", "booking-performance")],
+    tools: [tool("Short-let profit calculator", "short-let-profit-calculator"), tool("Short vs long let comparison", "short-let-vs-long-let"), tool("Long-stay discount calculator", "long-stay-discount-calculator"), tool("Booking performance tracker", "booking-performance")],
     cta: "Talk about your units", pkg: "Run + Build",
     quote: "[Short quote from an SA operator about time saved]", quoteBy: "[First name · city · 8 units]",
   },

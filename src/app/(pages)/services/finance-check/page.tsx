@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { isToolLive, toolBySlug } from "@/content/tools/catalog";
+import { toolPath as profitPath, toolSlug as profitSlug } from "@/content/tools/profitId";
 import type { ReactNode } from "react";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
@@ -72,6 +73,11 @@ export default function FinanceCheckPage() {
               behind it.
             </p>
             <div className="flex flex-wrap gap-3">
+              {isToolLive(profitSlug) && (
+                <Link href={profitPath} className="btn btn-coral rounded-[10px]" data-profit-link>
+                  Work out your real profit
+                </Link>
+              )}
               <a href="#download" className="btn btn-ink rounded-[10px]">
                 <DownloadIcon color="#FFFFFF" />
                 Download the free sheet

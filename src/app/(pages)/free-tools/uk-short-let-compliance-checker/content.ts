@@ -1,4 +1,6 @@
 import { anchors, routes } from "@/config/navigation";
+import { isToolLive } from "@/content/tools/catalog";
+import { toolPath as profitPath, toolSlug as profitSlug } from "@/content/tools/profitId";
 import type { FaqEntry } from "@/lib/seo";
 
 /**
@@ -19,7 +21,7 @@ export const nextStep = {
   title: "Next in your kit: Profit calculator",
   text: "Now you know the rules, check the numbers. Find out what your short let really earns after fees, cleaning and bills.",
   cta: "Go to the profit calculator",
-  href: anchors.tool("short-let-profit-calculator"),
+  href: isToolLive(profitSlug) ? `${profitPath}?kit=new-host` : anchors.tool("short-let-profit-calculator"),
 };
 
 export const howItWorks = {

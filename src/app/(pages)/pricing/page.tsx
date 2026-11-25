@@ -238,6 +238,11 @@ export default function PricingPage() {
               <SmartLink href={brand.links.bookCall} className="btn btn-white">
                 Book a 20-minute call
               </SmartLink>
+              {isLive(toolById("short-let-profit-calculator")) && (
+                <SmartLink href={toolLink(toolById("short-let-profit-calculator")!)} className="text-center text-sm font-bold text-ink underline underline-offset-2" data-profit-link>
+                  Or work out your real profit first (free tool) →
+                </SmartLink>
+              )}
               {isLive(toolById("ai-readiness-listing-scorer")) && (
                 <SmartLink href={toolLink(toolById("ai-readiness-listing-scorer")!)} className="text-center text-sm font-bold text-ink underline underline-offset-2" data-scorer-link>
                   Or check your AI readiness yourself (free tool) →

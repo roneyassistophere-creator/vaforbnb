@@ -13,6 +13,7 @@ import { toolPath as photoShotListPath, toolSlug as photoShotListSlug } from "./
 import { toolPath as descriptionBuilderPath, toolSlug as descriptionBuilderSlug } from "./descriptionBuilderId";
 import { toolPath as longStayPath, toolSlug as longStaySlug } from "./longStayId";
 import { toolPath as eventCalendarPath, toolSlug as eventCalendarSlug } from "./eventCalendarId";
+import { toolPath as profitPath, toolSlug as profitSlug } from "./profitId";
 
 /**
  * Every free tool. Used by the tools hub, tool pages and the links into tools
@@ -38,6 +39,7 @@ export const jobFromSlug = (slug: string | null): JobKey | null =>
   (jobOrder.find((k) => jobs[k].slug === slug || k === slug) as JobKey | undefined) ?? null;
 
 export type ToolStatus = "live" | "coming-soon";
+export type KitKey = "new-host" | "more-bookings" | "growing";
 
 export type Tool = {
   /** Card id on the hub (#id). */
@@ -60,8 +62,8 @@ export type Tool = {
   featured?: boolean;
   /** Small badge on the hub card, e.g. "New". */
   badge?: string;
-  /** Starter kit the tool belongs to. */
-  kit?: "new-host" | "more-bookings" | "growing";
+  /** Starter kit(s) the tool belongs to. */
+  kit?: KitKey | KitKey[];
   /** Hub card ids of related tools. */
   related?: string[];
   /** The next step after using the tool. */
@@ -100,7 +102,16 @@ export const tools: Tool[] = [
     related: ["airbnb-title-checker", "ai-ready-description-builder", "photo-shot-list-planner"],
     nextStep: { label: "Free AI-readiness audit", href: "/services/listing-optimisation#audit" },
   },
-  { ...T("numbers", "Short-let profit calculator", "Am I actually making money?", 3, "Result + PDF", "All UK", 1, "profit tax break-even money"), related: ["visitor-levy-calculator", "long-stay-discount-calculator", "uk-event-calendar"] },
+  {
+    ...T("numbers", "Short-let profit calculator", "Am I actually making money?", 3, "Result + PDF", "All UK", 1, "profit airbnb calculator holiday let calculator break-even occupancy tax cash flow roi money"),
+    slug: profitSlug,
+    href: profitPath,
+    status: "coming-soon",
+    badge: "Popular",
+    kit: ["new-host", "growing"],
+    related: ["direct-booking-savings", "long-stay-discount-calculator", "short-let-vs-long-let"],
+    nextStep: { label: "Finance check", href: "/services/finance-check" },
+  },
   {
     ...T("legal", "Business rates qualifier", "Do I qualify for business rates?", 1, "Result", "England · Scotland · Wales", 2, "business rates council tax 140 70 252 182 holiday let second home premium"),
     slug: businessRatesSlug,
