@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { copy, historyKey, steps, storageKey, toolSlug } from "@/content/tools/aiReadiness";
+import { copy, historyKey, propertyTypes, steps, storageKey, toolSlug } from "@/content/tools/aiReadiness";
+import { toolSlug as titleCheckerSlug } from "@/content/tools/titleCheckerId";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import {
   addToHistory,
+  applyTitlePrefill,
+  descriptionHandoff,
   changeSinceLast,
   changeText,
   cleanHistory,
@@ -17,12 +20,14 @@ import {
   improvedExampleInputs,
   readContent,
   scoreListing,
+  titleHandoff,
   simulateSearch,
   type CheckId,
   type HistoryEntry,
   type Inputs,
 } from "@/lib/tools/ai-readiness";
 import { deviceStorage } from "@/lib/tools/deviceStorage";
+import { handoffKey, readHandoffData, writeHandoff } from "@/lib/tools/handoff";
 import type { Figures } from "@/lib/tools/figures";
 import { londonToday } from "@/lib/tools/figures";
 import { LeadPdfModal } from "../LeadPdfModal";
@@ -56,6 +61,7 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
   const [saveFailed, setSaveFailed] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const [needText, setNeedText] = useState(false);
+  const [fromTitle, setFromTitle] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const { setResult } = useAiReadinessResult();
 
@@ -72,10 +78,26 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
       setExample(s.example === "weak" || s.example === "improved" ? s.example : "");
       setVisited(new Set([0, ...(Array.isArray(s.visited) ? s.visited.filter((n) => Number.isInteger(n) && n >= 0 && n < steps.length) : [])]));
     }
+    // From the title checker's "Check your whole listing": prefill the title and details once.
+    try {
+      if (new URLSearchParams(window.location.search).get("from") === titleCheckerSlug) {
+        const h = readHandoffData("scorer-prefill", (d) => d);
+        const base = s ? cleanInputs(s.inputs) : defaultInputs();
+        const next = h ? applyTitlePrefill(base, h.data, content.model, propertyTypes.map((t) => t.value)) : null;
+        if (next) {
+          setInputs(next);
+          setFromTitle(true);
+          track("import_used", toolSlug, { type: "title" });
+        }
+        deviceStorage.remove(handoffKey("scorer-prefill"));
+      }
+    } catch {
+      // ignore
+    }
     setHistory(cleanHistory(deviceStorage.read(historyKey)));
     setNow(new Date());
     setReady(true);
-  }, []);
+  }, [content.model]);
 
   useEffect(() => {
     if (!ready) return;
@@ -166,7 +188,7 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
       {/* Example bar */}
       <div className="mb-4 flex flex-wrap items-center gap-2 rounded-[16px] border border-violet-100 bg-violet-25 p-3 md:p-3.5">
         <p className="m-0 min-w-[180px] flex-1 text-sm font-semibold text-ink-copy">
-          {example === "weak" ? copy.exampleBanner : example === "improved" ? copy.improvedBanner : "Not sure what a good listing looks like? Load a sample and watch the score change."}
+          {example === "weak" ? copy.exampleBanner : example === "improved" ? copy.improvedBanner : fromTitle ? copy.handoff.fromTitle : "Not sure what a good listing looks like? Load a sample and watch the score change."}
         </p>
         {example === "weak" ? (
           <button type="button" onClick={() => loadExample("improved")} className="btn btn-violet min-h-11">
@@ -269,6 +291,8 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
             focusCheck={focusCheck}
             history={history}
             onClearHistory={() => setHistory([])}
+            onImproveTitle={() => writeHandoff(titleHandoff(inputs))}
+            onPlanPhotos={() => writeHandoff(descriptionHandoff(inputs, live))}
           />
         </div>
       )}

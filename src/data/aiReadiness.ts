@@ -1,5 +1,8 @@
 /**
- * AI-readiness listing scorer: scoring model v2 (stored content).
+ * AI-readiness listing scorer: scoring model v3 (stored content).
+ *
+ * v3 (2026-11-25): the title check no longer rewards the town or a bedroom
+ * count, which search already shows (matches the Airbnb title checker).
  *
  * Seeded into the `figures` table as structured content and read from there,
  * so every pattern, word list, point value, band, limit and template can be
@@ -10,13 +13,16 @@
  */
 
 export const model = {
-  version: 2,
+  version: 3,
   versionDate: "2026-11-25",
 
   /** Property type words for check A, and the types offered in step 2. */
   propertyTypeWords: ["flat", "apartment", "house", "cottage", "studio", "room", "loft", "bungalow", "lodge", "cabin"],
-  /** Concrete feature words for check A (a number also counts). */
-  titleFeatureWords: ["parking", "garden", "desk", "workspace", "wifi", "wi-fi", "hot tub", "sea view"],
+  /** Concrete feature words for check A (a number with a unit also counts, a bedroom count doesn't). Same list as the title checker. */
+  titleFeatureWords: [
+    "parking", "garden", "hot tub", "sea view", "canal view", "river view", "balcony", "roof terrace", "patio", "fireplace", "log burner",
+    "desk", "workspace", "fast wifi", "wifi", "wi-fi", "pet-friendly", "dog-friendly", "EV charger", "ensuite", "pool", "sauna", "beach", "lift", "step-free",
+  ],
 
   /** Units for check B: number + optional space or hyphen + unit. */
   units: ["mbps", "minutes", "minute", "mins", "min", "m²", "m2", "sq m", "sq ft", "metres", "metre", "meters", "meter", "miles", "mile", "km"],
@@ -159,8 +165,8 @@ export const model = {
     A: {
       length: { action: "Write a title of {limit} characters or fewer.", example: "‘{Type} with parking, 8 min to {place}’" },
       type: { action: "Say what the place is in the title.", example: "‘Quiet {type} with desk, near {place}’" },
-      place: { action: "Put your town, station or landmark in the title.", example: "‘{Type} with parking, 8 min to {place}’" },
-      feature: { action: "Add one concrete feature to the title: a number or a key amenity.", example: "‘2-bed {type} with parking near {place}’" },
+      place: { action: "Put your station or a landmark in the title. Search already shows your town.", example: "‘{Type} with parking, 8 min to {place}’" },
+      feature: { action: "Add one concrete feature to the title: a key amenity or a number with a unit. Search already shows the bedrooms.", example: "‘Garden {type} with parking near {place}’" },
     },
     B: { action: "Add facts with units: Wi-Fi speed, room sizes and distances.", example: "‘Wi-Fi: 150 Mbps. Main bedroom: 14 m². 2 miles to {landmark}.’" },
     C: {
@@ -191,9 +197,9 @@ export const model = {
     titleType: "Mentions ‘{word}’",
     titleNoType: "No property type in the title",
     titlePlace: "Mentions ‘{word}’",
-    titleNoPlace: "No town, station or landmark in title",
+    titleNoPlace: "No station or landmark in the title",
     titleFeature: "Concrete feature: ‘{word}’",
-    titleNoFeature: "No number or key amenity in the title",
+    titleNoFeature: "No key amenity or number with a unit in the title",
     units: "{n} facts with units: {list}",
     noUnits: "No facts with units (such as Mbps, minutes, m² or miles)",
     phrases: "{n} ‘minutes to’ phrases: {list}",

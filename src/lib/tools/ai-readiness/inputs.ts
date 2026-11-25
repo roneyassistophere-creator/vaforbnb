@@ -119,7 +119,7 @@ export const exampleInputs = (): Inputs => ({
 /** The same sample, rewritten with clear facts: shows how far the score can move. */
 export const improvedExampleInputs = (): Inputs => ({
   ...exampleInputs(),
-  title: "Quiet 2-bed Leeds flat with desk and parking",
+  title: "Flat with desk + parking, 8 min to Leeds station",
   sections: {
     description:
       "Quiet 2-bedroom flat (58 m²) on a residential street with double-glazed windows. It’s an 8-minute walk to Leeds station and 10 minutes by car to St James's Hospital.\n\nWi-Fi is 200 Mbps (tested November 2026). There’s a desk with an office chair and a monitor in bedroom 2.",

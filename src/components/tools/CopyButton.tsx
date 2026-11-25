@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 
 /**
@@ -23,6 +23,7 @@ export function CopyButton({
   const [state, setState] = useState<"idle" | "copied" | "fallback">("idle");
   const [text, setText] = useState("");
   const boxRef = useRef<HTMLTextAreaElement>(null);
+  const boxId = useId();
 
   const copy = async () => {
     const value = getText();
@@ -48,10 +49,10 @@ export function CopyButton({
       </span>
       {state === "fallback" && (
         <div className="mt-3 w-full basis-full">
-          <label className="mb-1.5 block text-sm font-bold" htmlFor="copy-fallback">
+          <label className="mb-1.5 block text-sm font-bold" htmlFor={boxId}>
             Copy didn’t work in this browser. Select the text below and copy it.
           </label>
-          <textarea id="copy-fallback" ref={boxRef} readOnly value={text} rows={10} className="field min-h-[200px] w-full p-3 font-mono text-[13px]" />
+          <textarea id={boxId} ref={boxRef} readOnly value={text} rows={10} className="field min-h-[200px] w-full p-3 font-mono text-[13px]" />
         </div>
       )}
     </>

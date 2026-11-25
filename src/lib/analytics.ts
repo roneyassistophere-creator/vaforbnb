@@ -29,7 +29,15 @@ export type ToolEvent =
   | "fix_copied"
   | "simulator_used"
   | "report_requested"
-  | "sent_to_description_builder";
+  | "sent_to_description_builder"
+  | "title_checked"
+  | "suggestion_used"
+  | "compare_used"
+  | "list_built"
+  | "shoot_mode_started"
+  | "shoot_mode_finished"
+  | "captions_copied"
+  | "imported_from_description";
 
 /** Item categories for item_added (never names or dates). `type` elsewhere is a short category like "csv" or "listing". */
 export type ItemType = "gas" | "eicr" | "fra" | "pat" | "legionella" | "licence" | "niCert" | "insurance" | "custom";
@@ -42,8 +50,12 @@ declare global {
   }
 }
 
-/** `outcome`, `type`, `area`, `count`, `band` and `check` are categories or counts only, never figures, dates, text or personal data. */
-export function track(event: ToolEvent, toolSlug: string, extra?: { outcome?: "passes" | "not-yet"; type?: string; area?: string; count?: number; band?: string; check?: string }) {
+/** `outcome`, `type`, `area`, `count`, `band`, `check` and `verdict` are categories or counts only, never figures, dates, text or personal data. */
+export function track(
+  event: ToolEvent,
+  toolSlug: string,
+  extra?: { outcome?: "passes" | "not-yet"; type?: string; area?: string; count?: number; band?: string; check?: string; verdict?: "strong" | "good" | "fixes" },
+) {
   if (!analyticsEnabled || typeof window === "undefined") return;
   (window.dataLayer ??= []).push({
     event,
@@ -54,5 +66,6 @@ export function track(event: ToolEvent, toolSlug: string, extra?: { outcome?: "p
     ...(typeof extra?.count === "number" ? { count: extra.count } : {}),
     ...(extra?.band ? { band: extra.band } : {}),
     ...(extra?.check ? { check: extra.check } : {}),
+    ...(extra?.verdict ? { verdict: extra.verdict } : {}),
   });
 }

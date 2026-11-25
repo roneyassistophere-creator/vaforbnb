@@ -36,7 +36,7 @@ const pts = (s: ReturnType<typeof score>) => Object.fromEntries(s.checks.map((c)
 
 const FULL = make(
   {
-    title: "Quiet 2-bed flat, 8 min walk to Piccadilly",
+    title: "Quiet flat with desk, 8 min walk to Piccadilly",
     landmark: "Piccadilly",
     propertyType: "flat",
     guestTypes: ["remote"],
@@ -54,13 +54,13 @@ const MID = make(
   "Spacious flat with WiFi and parking. 10 minutes to the city centre.",
 );
 
-describe("model v2: scoring", () => {
+describe("model v3: scoring", () => {
   it("1. empty inputs score 10, Needs work", () => {
     const s = score(defaultInputs());
     expect(pts(s)).toEqual({ A: 0, B: 0, C: 0, D: 0, E: 10, F: 0, G: 0, H: 0 });
     expect(s.total).toBe(10);
     expect(s.band.label).toBe("Needs work");
-    expect(s.version).toBe(2);
+    expect(s.version).toBe(3);
   });
 
   it("2. three vague hits → E = 4, all three found with positions", () => {
@@ -79,10 +79,10 @@ describe("model v2: scoring", () => {
     expect(s.analysis.units).toHaveLength(5);
     expect(s.analysis.phrases).toHaveLength(3);
     expect(s.checks[0].reasons.map((r) => [r.text, r.points])).toEqual([
-      ["Title is 42 characters (limit 50)", 4],
+      ["Title is 46 characters (limit 50)", 4],
       ["Mentions ‘flat’", 2],
       ["Mentions ‘Piccadilly’", 2],
-      ["Concrete feature: ‘2’", 2],
+      ["Concrete feature: ‘desk’", 2],
     ]);
     expect(s.needs.map((n) => [n.id, n.covered])).toEqual([
       ["fast-wifi", true],
@@ -92,10 +92,11 @@ describe("model v2: scoring", () => {
     expect(s.fixes).toEqual([]);
   });
 
-  it("4. mid fixture scores 42, Needs work, fixes D then B then H", () => {
+  it("4. mid fixture scores 40, Needs work, fixes D then B then H", () => {
     const s = score(MID);
-    expect(pts(s)).toEqual({ A: 8, B: 5, C: 8, D: 4, E: 6, F: 6, G: 5, H: 0 });
-    expect(s.total).toBe(42);
+    // v3: the town in the title ("Leeds") no longer earns the place point.
+    expect(pts(s)).toEqual({ A: 6, B: 5, C: 8, D: 4, E: 6, F: 6, G: 5, H: 0 });
+    expect(s.total).toBe(40);
     expect(s.band.label).toBe("Needs work");
     expect(s.fixes.map((f) => [f.check, f.points])).toEqual([
       ["D", 11],
@@ -103,7 +104,25 @@ describe("model v2: scoring", () => {
       ["H", 10],
     ]);
     expect(s.fixes[0].needs).toEqual(["Fast Wi-Fi", "Self check-in", "Kitchen"]);
-    expect(s.checks[0].reasons.map((r) => r.text)).toContain("No number or key amenity in the title");
+    expect(s.checks[0].reasons.map((r) => r.text)).toContain("No key amenity or number with a unit in the title");
+    expect(s.checks[0].reasons.map((r) => r.text)).toContain("No station or landmark in the title");
+  });
+
+  it("v3: the title earns points for a station or landmark and a feature, not the town or a bedroom count", () => {
+    const reasons = (i: Inputs) => score(i).checks[0].reasons;
+    const town = reasons(make({ title: "2-bed flat in Leeds", town: "Leeds", bedrooms: 2 }));
+    expect(town.find((r) => r.text === "No station or landmark in the title")?.points).toBe(0);
+    expect(town.find((r) => r.text === "No key amenity or number with a unit in the title")?.points).toBe(0);
+    const station = reasons(make({ title: "Flat, 6 min to Leeds station", town: "Leeds", station: "Leeds station" }));
+    expect(station.map((r) => r.text)).toContain("Mentions ‘Leeds station’");
+    expect(station.map((r) => r.text)).toContain("Concrete feature: ‘6 min’");
+    expect(reasons(make({ title: "Canal-view flat" })).map((r) => r.text)).toContain("Concrete feature: ‘Canal-view’");
+  });
+
+  it("v3: uses the title checker's stored limit and counts an emoji as one character", () => {
+    const f60: Figures = { ...figures, "titleChecker.limit": { ...figures["titleChecker.limit"], value: 60 } };
+    expect(readContent(f60).limits.title).toBe(60);
+    expect(score(make({ title: "Sea view flat 🌊" })).checks[0].reasons[0].text).toBe("Title is 15 characters (limit 50)");
   });
 
   it("5. a title over 50 characters gets no length points and a Shorten quick win", () => {

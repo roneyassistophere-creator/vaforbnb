@@ -1,0 +1,91 @@
+export { compareKey, storageKey, toolPath, toolSlug } from "./titleCheckerId";
+
+/**
+ * Interface copy for the Airbnb title checker. The limit, word lists,
+ * patterns, separators, templates and check messages are stored content
+ * (src/data/titleChecker.ts), read from the database.
+ */
+
+export const propertyTypeLabels: Record<string, string> = {
+  "": "Not set",
+  flat: "Flat",
+  house: "House",
+  cottage: "Cottage",
+  studio: "Studio",
+  room: "Room",
+  loft: "Loft",
+  other: "Other",
+};
+
+export const copy = {
+  privacy: "Your title is checked on your device.",
+  title: { label: "Your Airbnb title", placeholder: "Canal-view flat · free parking · 5 min to the tram", counter: "{n} / {limit}", over: "over the limit", near: "close to the limit" },
+  details: {
+    toggle: "Add details for smarter checks",
+    hint: "Optional. They let the checker spot details search already shows.",
+    town: { label: "Town or city", hint: "For example ‘Manchester’." },
+    place: { label: "Station or landmark", hint: "For example ‘Piccadilly station’ or ‘the beach’." },
+    type: "Property type",
+    bedrooms: { label: "Bedrooms", hint: "0 = studio. Leave empty to skip this." },
+  },
+  buttons: { example: "Try an example", clear: "Clear", clearData: "Clear my data", yesClear: "Yes, clear", cancel: "Cancel" },
+  exampleBanner: "An invented title with several things to fix. It isn’t yours.",
+  exampleHint: "Not sure what to look for? Load an example title.",
+  clearConfirm: "Clear your title, details, builder choices and compared titles from this device?",
+  storageFailed: "This browser isn’t letting us save, so your title won’t be remembered after you leave. The checker still works.",
+  live: "{n} of {limit} characters. {verdict}. {passed}.",
+  verdictEmpty: "Your verdict appears here",
+  verdictEmptyHint: "Type or paste your title. The checklist updates as you type.",
+  card: {
+    heading: "How it could look in search",
+    label: "Illustration. Cut-off points vary by device.",
+    rating: "4.9",
+    empty: "Your title appears here",
+    cut: "Cut off after {limit} characters",
+    photo: "Photo",
+  },
+  highlighted: { heading: "Your title, highlighted", key: "Underlined parts link to the numbered checks below.", fix: "Fix", tip: "Tip" },
+  tabs: { checklist: "Checklist", builder: "Title builder", compare: "Compare titles" },
+  status: { pass: "Pass", fix: "Fix", tip: "Tip" },
+  checklist: { fixes: "Fix these first", tips: "Could be stronger", passes: "Passed", extra: "Extra tip", seeWhy: "See why each check passed or failed", empty: "Type or paste your title above to see the checklist." },
+  builder: {
+    intro: "Pick what makes your place stand out. Every idea below already passes all the Fix checks and fits the limit.",
+    features: { legend: "Standout features", hint: "Pick up to {max}.", full: "You’ve picked {max}. Untick one to choose another." },
+    own: { label: "Add your own feature", hint: "Up to {max} characters, for example ‘converted chapel’.", add: "Add", remove: "Remove {feature}" },
+    benefit: { legend: "A benefit", none: "None", own: "My own", ownLabel: "Your benefit", sleeps: "sleeps …", guests: "Guests it sleeps" },
+    hook: { legend: "A location hook", minutes: "Minutes to a place", near: "Near a place", none: "None", mode: "How guests get there", minutesLabel: "Minutes", needPlace: "Add a station or landmark to use a location hook." },
+    separator: "Separator style",
+    results: "Title ideas",
+    empty: "Pick at least one standout feature to see title ideas.",
+    use: "Use this",
+    copy: "Copy",
+    compare: "Compare",
+    added: "Added to compare",
+    count: "{n} characters",
+  },
+  imported: "Imported from your AI-readiness score",
+  importedHint: "Your title and details came across from the scorer, saved on this device.",
+  copyTitle: "Copy title",
+  copyChecklist: "Copy checklist",
+  copied: "Copied",
+  credit: "Checked with VA for BnB’s Airbnb title checker",
+  next: {
+    kitEyebrow: "Get more bookings kit · step 3",
+    kitTitle: "Next in your kit: AI-ready description builder",
+    kitLive: "It picks up your final title and details, so your description and title match.",
+    kitSoon: "Coming soon. Save your final title and details on this device, ready for it to import.",
+    kitCta: "Continue to the description builder",
+    kitSave: "Save for the description builder",
+    saved: "Saved on this device. The AI-ready description builder is coming soon and will import it.",
+    needTitle: "Add a title first.",
+  },
+  compare: {
+    intro: "Compare up to {max} titles side by side, then pick the one to use.",
+    empty: "No titles to compare yet. Add titles from the title builder, or add the one you’re checking now.",
+    addCurrent: "Add my current title",
+    pick: "Pick this one",
+    picked: "In use",
+    remove: "Remove",
+    full: "You’re comparing {max} titles. Adding another replaces the oldest.",
+  },
+};

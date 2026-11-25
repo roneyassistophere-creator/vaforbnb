@@ -8,6 +8,8 @@ import { toolPath as levyPath, toolSlug as levySlug } from "./visitorLevyId";
 import { toolPath as registerPath, toolSlug as registerSlug } from "./guestRegisterId";
 import { toolPath as houseRulesPath, toolSlug as houseRulesSlug } from "./houseRulesId";
 import { toolPath as aiReadinessPath, toolSlug as aiReadinessSlug } from "./aiReadinessId";
+import { toolPath as titleCheckerPath, toolSlug as titleCheckerSlug } from "./titleCheckerId";
+import { toolPath as photoShotListPath, toolSlug as photoShotListSlug } from "./photoShotListId";
 
 /**
  * Every free tool. Used by the tools hub, tool pages and the links into tools
@@ -124,7 +126,15 @@ export const tools: Tool[] = [
   },
   T("numbers", "Booking performance", "What are my occupancy, ADR and RevPAR?", 1, "Result", "All UK", 2, "occupancy adr revpar"),
   T("time", "Hosting time calculator", "How many hours does my listing take?", 2, "Result", "All UK", 3, "hours time workload"),
-  { ...T("bookings", "Airbnb title checker", "Is my title good enough?", 1, "Result", "All UK", 3, "title 50 characters"), kit: "more-bookings", related: ["ai-readiness-listing-scorer", "ai-ready-description-builder"] },
+  {
+    ...T("bookings", "Airbnb title checker", "Is my title good enough?", 1, "Result + title ideas", "All UK", 3, "title listing title headline 50 characters airbnb name"),
+    slug: titleCheckerSlug,
+    href: titleCheckerPath,
+    status: "live",
+    kit: "more-bookings",
+    related: ["ai-readiness-listing-scorer", "ai-ready-description-builder"],
+    nextStep: { label: "Listing optimisation", href: "/services/listing-optimisation" },
+  },
   T("numbers", "Short-let vs long-let", "Would long-letting pay me more?", 2, "Result", "All UK", 3, "long let rent compare"),
   { ...T("numbers", "Cleaning fee calculator", "What should my cleaning fee be?", 1, "Result", "All UK", 3, "cleaning fee turnover"), related: ["visitor-levy-calculator"] },
   {
@@ -136,8 +146,16 @@ export const tools: Tool[] = [
     nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },
   },
   T("time", "Guest message generator", "What do I say to this guest?", 1, "Text to copy", "All UK", 4, "message template guest"),
-  { ...T("bookings", "AI-ready description builder", "How do I write my description?", 3, "Text to copy", "All UK", 4, "description write ai"), kit: "more-bookings", related: ["ai-readiness-listing-scorer", "airbnb-title-checker"] },
-  { ...T("bookings", "Photo shot list planner", "Which photos, in what order?", 2, "PDF", "All UK", 4, "photos order cover"), kit: "more-bookings" },
+  { ...T("bookings", "AI-ready description builder", "How do I write my description?", 3, "Text to copy", "All UK", 4, "description write ai"), kit: "more-bookings", related: ["ai-readiness-listing-scorer", "airbnb-title-checker", "photo-shot-list-planner"] },
+  {
+    ...T("bookings", "Photo shot list planner", "Which photos, in what order?", 2, "Shot list + PDF", "All UK", 4, "photos photo order cover photo photo tour captions photography"),
+    slug: photoShotListSlug,
+    href: photoShotListPath,
+    status: "live",
+    kit: "more-bookings",
+    related: ["ai-ready-description-builder", "ai-readiness-listing-scorer", "cleaning-checklist-generator"],
+    nextStep: { label: "Listing optimisation", href: "/services/listing-optimisation" },
+  },
   { ...T("bookings", "Long-stay discount calculator", "Should I discount a 28-night stay?", 2, "Result", "All UK", 3, "monthly weekly discount long stay"), kit: "more-bookings" },
   {
     ...T("legal", "Guest register builder", "What guest records must I keep?", 1, "Spreadsheet + printable", "All UK", 4, "guest register guest book passport id hotel records check-in form"),
@@ -157,7 +175,7 @@ export const tools: Tool[] = [
     nextStep: { label: "Listing optimisation", href: "/services/listing-optimisation" },
   },
   { ...T("time", "Welcome guide builder", "What goes in my welcome guide?", 5, "Printable PDF", "All UK", 4, "welcome book guide"), kit: "new-host", related: ["certificate-reminders", "guest-register-builder"] },
-  { ...T("time", "Cleaning checklist generator", "What should my cleaner check?", 2, "Printable PDF", "All UK", 4, "cleaning checklist"), related: ["certificate-reminders"] },
+  { ...T("time", "Cleaning checklist generator", "What should my cleaner check?", 2, "Printable PDF", "All UK", 4, "cleaning checklist"), related: ["certificate-reminders", "photo-shot-list-planner"] },
   T("time", "Linen and supplies calculator", "How much linen and stock do I need?", 2, "Result + spreadsheet", "All UK", 4, "linen towels supplies restock"),
   T("bookings", "UK event calendar", "What events are coming near me?", 1, "Result", "All UK", 5, "events festivals calendar"),
 ];
