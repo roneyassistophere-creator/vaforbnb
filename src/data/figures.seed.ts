@@ -5,6 +5,7 @@ import * as hr from "./houseRules";
 import * as tc from "./titleChecker";
 import * as ps from "./photoShotList";
 import * as db from "./descriptionBuilder";
+import * as ls from "./longStay";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -130,6 +131,7 @@ export const figuresSeed: Figure[] = [
   ...titleChecker(),
   ...photoShotList(),
   ...descriptionBuilder(),
+  ...longStay(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -212,6 +214,22 @@ function descriptionBuilder(): Figure[] {
       lastChecked: "2026-11-25",
       verify: false,
     },
+  ];
+}
+
+/** Long-stay discount calculator: platform thresholds, fee presets (VERIFY), highlight threshold (VERIFY) and editable assumptions. London's 90-night figure is shared (london.longStayMinNights). */
+function longStay(): Figure[] {
+  const airbnb = { sourceTitle: "Airbnb Help Centre: weekly and monthly discounts", sourceUrl: "https://www.airbnb.co.uk/help" };
+  const fees = { sourceTitle: "Airbnb Help Centre: host-only service fee", sourceUrl: "https://www.airbnb.co.uk/help" };
+  const ours = { sourceTitle: "VA for BnB assumption (editable)", sourceUrl: null };
+  const d = "2026-11-25";
+  return [
+    { key: "platform.weeklyDiscountMinNights", value: 7, unit: "nights", label: "Airbnb: weekly discounts apply to stays of this many nights or more", ...airbnb, lastChecked: d, verify: false },
+    { key: "platform.monthlyDiscountMinNights", value: 28, unit: "nights", label: "Airbnb: monthly discounts apply to stays of this many nights or more", ...airbnb, lastChecked: d, verify: false },
+    { key: "platform.discountHighlightMinPercent", value: 10, unit: "%", label: "Airbnb: discounts of at least this much are highlighted to guests in search", ...airbnb, lastChecked: d, verify: true },
+    { key: "fees.airbnbHostOnlyPercent", value: 15.5, unit: "%", label: "Airbnb host-only service fee (preset in the long-stay calculator)", ...fees, lastChecked: d, verify: true },
+    { key: "fees.directCardPercent", value: 1.5, unit: "%", label: "Direct booking card processing fee, typical UK rate excluding any fixed fee per payment (preset)", ...ours, lastChecked: d, verify: true },
+    { key: "longStay.settings", value: { json: ls.settings }, unit: null, label: `Long-stay calculator: defaults, sensitivity steps and note triggers v${ls.settings.version}`, ...ours, lastChecked: d, verify: false },
   ];
 }
 

@@ -29,3 +29,12 @@ export function joinList(items: string[], word = "and"): string {
 
 /** First letter lower-case, for joining phrases into a sentence ("Load the dishwasher" → "load the dishwasher"). */
 export const lowerFirst = (s: string) => (s ? s[0].toLowerCase() + s.slice(1) : s);
+
+/** "£1,139.60" (dp 2) or "£1,140" (dp 0). Negative values get a leading minus: "−£56.53". */
+export function money(n: number, dp: 0 | 2 = 2): string {
+  const s = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", minimumFractionDigits: dp, maximumFractionDigits: dp }).format(Math.abs(n));
+  return n < 0 && Math.abs(n) >= (dp === 0 ? 0.5 : 0.005) ? `−${s}` : s;
+}
+
+/** "49.7%" from a decimal (0.497). */
+export const percent = (x: number, dp = 1) => `${(x * 100).toFixed(dp)}%`;

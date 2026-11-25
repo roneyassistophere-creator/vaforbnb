@@ -11,6 +11,7 @@ import { toolPath as aiReadinessPath, toolSlug as aiReadinessSlug } from "./aiRe
 import { toolPath as titleCheckerPath, toolSlug as titleCheckerSlug } from "./titleCheckerId";
 import { toolPath as photoShotListPath, toolSlug as photoShotListSlug } from "./photoShotListId";
 import { toolPath as descriptionBuilderPath, toolSlug as descriptionBuilderSlug } from "./descriptionBuilderId";
+import { toolPath as longStayPath, toolSlug as longStaySlug } from "./longStayId";
 
 /**
  * Every free tool. Used by the tools hub, tool pages and the links into tools
@@ -98,7 +99,7 @@ export const tools: Tool[] = [
     related: ["airbnb-title-checker", "ai-ready-description-builder", "photo-shot-list-planner"],
     nextStep: { label: "Free AI-readiness audit", href: "/services/listing-optimisation#audit" },
   },
-  { ...T("numbers", "Short-let profit calculator", "Am I actually making money?", 3, "Result + PDF", "All UK", 1, "profit tax break-even money"), related: ["visitor-levy-calculator"] },
+  { ...T("numbers", "Short-let profit calculator", "Am I actually making money?", 3, "Result + PDF", "All UK", 1, "profit tax break-even money"), related: ["visitor-levy-calculator", "long-stay-discount-calculator"] },
   {
     ...T("legal", "Business rates qualifier", "Do I qualify for business rates?", 1, "Result", "England · Scotland · Wales", 2, "business rates council tax 140 70 252 182 holiday let second home premium"),
     slug: businessRatesSlug,
@@ -136,7 +137,7 @@ export const tools: Tool[] = [
     related: ["ai-readiness-listing-scorer", "ai-ready-description-builder"],
     nextStep: { label: "Listing optimisation", href: "/services/listing-optimisation" },
   },
-  T("numbers", "Short-let vs long-let", "Would long-letting pay me more?", 2, "Result", "All UK", 3, "long let rent compare"),
+  { ...T("numbers", "Short-let vs long-let", "Would long-letting pay me more?", 2, "Result", "All UK", 3, "long let rent compare"), related: ["long-stay-discount-calculator"] },
   { ...T("numbers", "Cleaning fee calculator", "What should my cleaning fee be?", 1, "Result", "All UK", 3, "cleaning fee turnover"), related: ["visitor-levy-calculator"] },
   {
     ...T("legal", "Visitor levy calculator", "How much visitor levy do I charge?", 1, "Result + CSV", "Scotland · Wales", 3, "tourist tax visitor levy edinburgh glasgow aberdeen stirling west dunbartonshire cardiff"),
@@ -165,7 +166,15 @@ export const tools: Tool[] = [
     related: ["ai-ready-description-builder", "ai-readiness-listing-scorer", "cleaning-checklist-generator"],
     nextStep: { label: "Listing optimisation", href: "/services/listing-optimisation" },
   },
-  { ...T("bookings", "Long-stay discount calculator", "Should I discount a 28-night stay?", 2, "Result", "All UK", 3, "monthly weekly discount long stay"), kit: "more-bookings" },
+  {
+    ...T("bookings", "Long-stay discount calculator", "Should I discount a 28-night stay?", 2, "Result", "All UK", 3, "monthly discount weekly discount long stay 28 nights contractors mid-term"),
+    slug: longStaySlug,
+    href: longStayPath,
+    status: "coming-soon",
+    kit: "more-bookings",
+    related: ["short-let-profit-calculator", "london-90-night-counter", "short-let-vs-long-let"],
+    nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },
+  },
   {
     ...T("legal", "Guest register builder", "What guest records must I keep?", 1, "Spreadsheet + printable", "All UK", 4, "guest register guest book passport id hotel records check-in form"),
     slug: registerSlug,

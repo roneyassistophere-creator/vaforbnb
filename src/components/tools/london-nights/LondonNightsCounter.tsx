@@ -5,6 +5,7 @@ import { copy, storageKey, toolSlug } from "@/content/tools/londonNights";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import { deviceStorage } from "@/lib/tools/deviceStorage";
+import { makeHandoff, writeHandoff } from "@/lib/tools/handoff";
 import { downloadText } from "@/lib/tools/download";
 import { formatDate, londonToday, type Figures } from "@/lib/tools/figures";
 import {
@@ -86,6 +87,12 @@ export function LondonNightsCounter({ figures }: { figures: Figures }) {
   useEffect(() => {
     setShown(result ? { result, hasBookings: bookings.length > 0 } : null);
   }, [result, bookings.length, setShown]);
+
+  // Shared device format: tell other tools (the long-stay discount calculator) this is a London property. Only a flag, never bookings.
+  const hasRealBookings = bookings.some((b) => !b.example);
+  useEffect(() => {
+    if (hasRealBookings) writeHandoff(makeHandoff("london-flag", toolSlug, { london: true }));
+  }, [hasRealBookings]);
 
   const rulesChecked = typeof figures.rulesLastChecked?.value === "string" ? formatDate(figures.rulesLastChecked.value) : "";
 

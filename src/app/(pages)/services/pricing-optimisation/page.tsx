@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { isToolLive, toolBySlug } from "@/content/tools/catalog";
+import { isToolLive, toolBySlug, toolLink } from "@/content/tools/catalog";
+import { toolSlug as longStaySlug } from "@/content/tools/longStayId";
 import type { ReactNode } from "react";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
@@ -542,6 +543,16 @@ export default function PricingOptimisationPage() {
                 </div>
               }
             />
+            {isToolLive(longStaySlug) && (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[18px] border border-line bg-white px-6 py-5" data-long-stay-link>
+                <p className="m-0 text-[15px] leading-[1.6] text-ink-copy">
+                  <strong className="text-ink">Thinking about a weekly or monthly discount?</strong> Our free calculator compares short stays with one discounted long stay, after fees and turnovers.
+                </p>
+                <SmartLink href={toolLink(toolBySlug(longStaySlug)!)} className="btn btn-coral rounded-full">
+                  Check a long-stay discount (free tool) →
+                </SmartLink>
+              </div>
+            )}
             <p className="m-0 mt-4 text-[13px] leading-normal text-muted">
               Sources: PriceLabs base price guide and customisations list; Airbnb Help, weekly and monthly discounts;
               SmartOrder, Booking.com Genius discount stacking.

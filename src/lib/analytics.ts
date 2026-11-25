@@ -41,7 +41,9 @@ export type ToolEvent =
   | "section_copied"
   | "make_it_fit_used"
   | "score_this_clicked"
-  | "imported_from_scorer";
+  | "imported_from_scorer"
+  | "result_shown"
+  | "scenario_saved";
 
 /** Item categories for item_added (never names or dates). `type` elsewhere is a short category like "csv" or "listing". */
 export type ItemType = "gas" | "eicr" | "fra" | "pat" | "legionella" | "licence" | "niCert" | "insurance" | "custom";

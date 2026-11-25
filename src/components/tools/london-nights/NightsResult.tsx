@@ -1,6 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { copy } from "@/content/tools/londonNights";
+import { isToolLive, toolBySlug, toolLink } from "@/content/tools/catalog";
+import { toolSlug as longStaySlug } from "@/content/tools/longStayId";
 import { formatLong, formatRange, platformName, statusText, type Booking, type NightsResult } from "@/lib/tools/london-nights";
 import { CopyButton } from "../CopyButton";
 import { ProgressRing } from "../ProgressRing";
@@ -43,6 +46,11 @@ export function NightsResultPanel({
           <StatusPill tone={tones[r.status]} className="min-h-11 self-start px-4 text-base">
             {statusText(r)}
           </StatusPill>
+          {(r.status === "approaching" || r.status === "reached") && isToolLive(longStaySlug) && (
+            <Link href={toolLink(toolBySlug(longStaySlug)!)} className="inline-flex min-h-11 items-center self-start text-sm font-bold text-brand underline underline-offset-2" data-longer-stays>
+              Consider longer stays: check a long-stay discount →
+            </Link>
+          )}
           <p className="m-0 text-sm text-ink-copy">
             {C.usedSoFar}: <strong className="text-ink">{r.usedSoFar}</strong> · {C.bookedAhead}: <strong className="text-ink">{r.bookedAhead}</strong> · Total:{" "}
             <strong className="text-ink">{r.used}</strong>
