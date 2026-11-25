@@ -32,6 +32,7 @@ export function ResultTabs({
   onClearHistory,
   onImproveTitle,
   onPlanPhotos,
+  onWriteDescription,
 }: {
   tab: ResultTab;
   onTab: (t: ResultTab) => void;
@@ -50,6 +51,8 @@ export function ResultTabs({
   onImproveTitle?: () => void;
   /** Saves the listing details for the Photo shot list planner before "Plan my photos and captions" opens it. */
   onPlanPhotos?: () => void;
+  /** Saves the listing for the AI-ready description builder before "Write it with the description builder" opens it. */
+  onWriteDescription?: () => void;
 }) {
   return (
     <section aria-label="Your results" className="rounded-[20px] border border-line bg-white" id="air-results">
@@ -77,7 +80,7 @@ export function ResultTabs({
         ))}
       </div>
       <div id={`air-tabpanel-${tab}`} role="tabpanel" aria-labelledby={`air-tab-${tab}`} className="p-4 md:p-6" tabIndex={-1}>
-        {tab === "fixes" && <FixesTab score={score} ticked={ticked} onTick={onTick} onFixCopied={onFixCopied} onImproveTitle={onImproveTitle} onPlanPhotos={onPlanPhotos} />}
+        {tab === "fixes" && <FixesTab score={score} ticked={ticked} onTick={onTick} onFixCopied={onFixCopied} onImproveTitle={onImproveTitle} onPlanPhotos={onPlanPhotos} onWriteDescription={onWriteDescription} />}
         {tab === "simulator" && <SimulatorTab content={content} query={simQuery} simulation={simulation} onSimulate={onSimulate} />}
         {tab === "text" && <HighlightedText analysis={score.analysis} content={content} />}
         {tab === "breakdown" && <Breakdown score={score} focus={focusCheck} onImproveTitle={onImproveTitle} />}
@@ -127,6 +130,25 @@ function PlanPhotos({ onClick }: { onClick?: () => void }) {
   );
 }
 
+/** "Write it with the description builder": opens the builder with this listing (saved on this device). Shown once the builder is live. */
+function WriteDescription({ onClick }: { onClick?: () => void }) {
+  const builder = toolById("ai-ready-description-builder");
+  if (!builder || !isLive(builder)) return null;
+  return (
+    <a
+      href={`${toolLink(builder)}?from=${toolSlug}`}
+      onClick={() => {
+        onClick?.();
+        track("next_step_clicked", toolSlug, { type: "description-builder" });
+      }}
+      className="btn btn-violet min-h-11"
+      data-write-description
+    >
+      {copy.handoff.writeDescription} →
+    </a>
+  );
+}
+
 function FixesTab({
   score,
   ticked,
@@ -134,6 +156,7 @@ function FixesTab({
   onFixCopied,
   onImproveTitle,
   onPlanPhotos,
+  onWriteDescription,
 }: {
   score: Score;
   ticked: Set<string>;
@@ -141,6 +164,7 @@ function FixesTab({
   onFixCopied: (c: CheckId) => void;
   onImproveTitle?: () => void;
   onPlanPhotos?: () => void;
+  onWriteDescription?: () => void;
 }) {
   return (
     <div className="grid gap-6">
@@ -174,6 +198,7 @@ function FixesTab({
                     <CopyButton getText={() => f.example} label={copy.fixes.copyExample} className="min-h-11" onCopied={() => onFixCopied(f.check)} />
                     {f.check === "A" && <ImproveTitle onClick={onImproveTitle} />}
                     {f.check === "G" && <PlanPhotos onClick={onPlanPhotos} />}
+                    {(f.check === "D" || f.check === "E") && <WriteDescription onClick={onWriteDescription} />}
                   </div>
                 </div>
               )}

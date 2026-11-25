@@ -182,6 +182,7 @@ export const copy = {
   importedKept: "We kept {n} answer(s) you’d already given.",
   toolNames: {
     "ai-ready-description-builder": "your description",
+    "airbnb-description-builder": "your description",
     "airbnb-ai-readiness-score": "your AI-readiness score",
     "airbnb-title-checker": "the title checker",
   } as Record<string, string>,

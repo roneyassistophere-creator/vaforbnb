@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { copy, historyKey, propertyTypes, steps, storageKey, toolSlug } from "@/content/tools/aiReadiness";
 import { toolSlug as titleCheckerSlug } from "@/content/tools/titleCheckerId";
+import { toolSlug as descriptionBuilderSlug } from "@/content/tools/descriptionBuilderId";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import {
@@ -61,7 +62,7 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
   const [saveFailed, setSaveFailed] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
   const [needText, setNeedText] = useState(false);
-  const [fromTitle, setFromTitle] = useState(false);
+  const [fromTitle, setFromTitle] = useState<"" | "title" | "description">("");
   const panelRef = useRef<HTMLDivElement>(null);
   const { setResult } = useAiReadinessResult();
 
@@ -80,14 +81,22 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
     }
     // From the title checker's "Check your whole listing": prefill the title and details once.
     try {
-      if (new URLSearchParams(window.location.search).get("from") === titleCheckerSlug) {
+      const from = new URLSearchParams(window.location.search).get("from");
+      if (from === titleCheckerSlug || from === descriptionBuilderSlug) {
         const h = readHandoffData("scorer-prefill", (d) => d);
         const base = s ? cleanInputs(s.inputs) : defaultInputs();
         const next = h ? applyTitlePrefill(base, h.data, content.model, propertyTypes.map((t) => t.value)) : null;
         if (next) {
           setInputs(next);
-          setFromTitle(true);
-          track("import_used", toolSlug, { type: "title" });
+          const fromDescription = from === descriptionBuilderSlug;
+          setFromTitle(fromDescription ? "description" : "title");
+          // A full description arrives ready to score: show the score straight away.
+          if (fromDescription && next.sections.description) {
+            setScored(true);
+            setExample("");
+            setVisited(new Set([0, 1, 2, 3]));
+          }
+          track("import_used", toolSlug, { type: fromDescription ? "description" : "title" });
         }
         deviceStorage.remove(handoffKey("scorer-prefill"));
       }
@@ -188,7 +197,7 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
       {/* Example bar */}
       <div className="mb-4 flex flex-wrap items-center gap-2 rounded-[16px] border border-violet-100 bg-violet-25 p-3 md:p-3.5">
         <p className="m-0 min-w-[180px] flex-1 text-sm font-semibold text-ink-copy">
-          {example === "weak" ? copy.exampleBanner : example === "improved" ? copy.improvedBanner : fromTitle ? copy.handoff.fromTitle : "Not sure what a good listing looks like? Load a sample and watch the score change."}
+          {example === "weak" ? copy.exampleBanner : example === "improved" ? copy.improvedBanner : fromTitle === "description" ? copy.handoff.fromDescription : fromTitle ? copy.handoff.fromTitle : "Not sure what a good listing looks like? Load a sample and watch the score change."}
         </p>
         {example === "weak" ? (
           <button type="button" onClick={() => loadExample("improved")} className="btn btn-violet min-h-11">
@@ -293,6 +302,7 @@ export function AiReadinessTool({ figures }: { figures: Figures }) {
             onClearHistory={() => setHistory([])}
             onImproveTitle={() => writeHandoff(titleHandoff(inputs))}
             onPlanPhotos={() => writeHandoff(descriptionHandoff(inputs, live))}
+            onWriteDescription={() => writeHandoff(descriptionHandoff(inputs, live))}
           />
         </div>
       )}

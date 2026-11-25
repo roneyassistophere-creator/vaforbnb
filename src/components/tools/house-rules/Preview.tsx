@@ -44,6 +44,7 @@ export function Preview({
   onSignPdf,
   onToGuide,
   guideMessage,
+  onToBuilder,
 }: {
   tab: PreviewTab;
   onTab: (t: PreviewTab) => void;
@@ -62,6 +63,8 @@ export function Preview({
   onSignPdf: () => void;
   onToGuide: () => void;
   guideMessage: string;
+  /** "Add house rule highlights to Other things to note" (only when the description builder is live). */
+  onToBuilder?: () => void;
 }) {
   const A = copy.actions;
   const over = listing.length - limit;
@@ -133,6 +136,11 @@ export function Preview({
               <p aria-live="polite" className="m-0 text-sm font-bold text-green">
                 {guideMessage}
               </p>
+              {onToBuilder && (
+                <button type="button" onClick={onToBuilder} className="block min-h-11 cursor-pointer border-none bg-transparent p-0 text-sm font-bold text-violet underline underline-offset-2" data-to-description-builder>
+                  {A.toBuilder} →
+                </button>
+              )}
             </div>
           </>
         )}

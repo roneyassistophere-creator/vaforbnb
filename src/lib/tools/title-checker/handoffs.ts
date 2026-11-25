@@ -15,7 +15,8 @@ import { squash } from "@/lib/tools/listing-text";
 import type { Details } from "./check";
 import { cleanDetails, LIMITS } from "./inputs";
 
-export type TitleImport = { title: string; details: Details; maxGuests: number | null };
+/** `standout`: from the description builder, for the title builder (empty when not sent). */
+export type TitleImport = { title: string; details: Details; maxGuests: number | null; standout: string };
 
 const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
 const num = (v: unknown, min: number, max: number) => (typeof v === "number" && Number.isFinite(v) ? Math.min(max, Math.max(min, Math.round(v))) : null);
@@ -29,14 +30,16 @@ export function parseTitleImport(data: unknown): TitleImport | null {
   if (!data || typeof data !== "object") return null;
   const o = data as Partial<TitleHandoff> & Record<string, unknown>;
   const title = str(o.title, LIMITS.title);
-  if (!title) return null;
+  const standout = str(o.standout, 60);
+  // The description builder may send no title, only the details and the standout feature.
+  if (!title && !standout) return null;
   const details = cleanDetails({
     town: str(o.town, LIMITS.place),
     place: str(o.station, LIMITS.place) || str(o.landmark, LIMITS.place),
     propertyType: str(o.propertyType, 20),
     bedrooms: num(o.bedrooms, 0, LIMITS.bedrooms),
   });
-  return { title, details, maxGuests: num(o.maxGuests, 1, LIMITS.guests) };
+  return { title, details, maxGuests: num(o.maxGuests, 1, LIMITS.guests), standout };
 }
 
 const isListingText = (d: unknown): d is ListingTextHandoff => !!d && typeof d === "object" && typeof (d as ListingTextHandoff).description === "string" && typeof (d as ListingTextHandoff).details === "object";

@@ -37,7 +37,11 @@ export type ToolEvent =
   | "shoot_mode_started"
   | "shoot_mode_finished"
   | "captions_copied"
-  | "imported_from_description";
+  | "imported_from_description"
+  | "section_copied"
+  | "make_it_fit_used"
+  | "score_this_clicked"
+  | "imported_from_scorer";
 
 /** Item categories for item_added (never names or dates). `type` elsewhere is a short category like "csv" or "listing". */
 export type ItemType = "gas" | "eicr" | "fra" | "pat" | "legionella" | "licence" | "niCert" | "insurance" | "custom";

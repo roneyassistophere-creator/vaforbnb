@@ -45,6 +45,7 @@ export const copy = {
     txt: "Download text (.txt)",
     copyChecklist: "Copy checklist",
     toGuide: "Use these rules in my welcome guide",
+    toBuilder: "Add house rule highlights to Other things to note",
     toGuideSaved: "Saved on this device for the Welcome guide builder.",
   },
   listing: {

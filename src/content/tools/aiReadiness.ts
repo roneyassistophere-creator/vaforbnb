@@ -82,6 +82,8 @@ export const copy = {
     auditSaved: "Saved for the audit form on this device.",
     improveTitle: "Improve my title",
     planPhotos: "Plan my photos and captions",
+    writeDescription: "Write it with the description builder",
+    fromDescription: "Your four sections came across from the AI-ready description builder and are scored below. Tick your photo captions and amenities to complete the score.",
     fromTitle: "Your title came across from the Airbnb title checker. Add your description to score your whole listing.",
   },
 };

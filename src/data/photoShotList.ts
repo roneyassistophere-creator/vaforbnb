@@ -319,7 +319,7 @@ export const rules = {
    * Minutes phrase, shared with the description builder: "12-minute walk to
    * Piccadilly station". {n} minutes, {place}.
    */
-  minutesPhrases: { walk: "{n}-minute walk to {place}", drive: "{n}-minute drive to {place}", bus: "{n} minutes by bus to {place}", train: "{n} minutes by train to {place}", tube: "{n} minutes by tube to {place}", cycle: "{n}-minute cycle to {place}" } as Record<string, string>,
+  minutesPhrases: { walk: "{n}-minute walk to {place}", drive: "{n}-minute drive to {place}", bus: "{n} minutes by bus to {place}", train: "{n} minutes by train to {place}", tube: "{n} minutes by tube to {place}", tram: "{n} minutes by tram to {place}", cycle: "{n}-minute cycle to {place}" } as Record<string, string>,
 
   /** Standout and second selling point: these kinds can be chosen (when ticked). */
   standoutKinds: ["view", "outdoor", "hotTub", "pool", "fireplace", "gamesRoom", "gym", "livingSpace", "kitchenDiner", "kitchen", "mainBedroom", "workspace", "dining"],

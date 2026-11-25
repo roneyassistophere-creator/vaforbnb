@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { copy, toolSlug } from "@/content/tools/aiReadiness";
 import { isLive, toolById, toolLink } from "@/content/tools/catalog";
 import { track } from "@/lib/analytics";
@@ -50,6 +51,7 @@ export function KitBadge({ label }: { label: string }) {
 function SendToBuilder({ className }: { className?: string }) {
   const { result } = useAiReadinessResult();
   const [msg, setMsg] = useState("");
+  const router = useRouter();
   const builder = toolById("ai-ready-description-builder");
   return (
     <span className="grid gap-1">
@@ -60,7 +62,7 @@ function SendToBuilder({ className }: { className?: string }) {
           if (!result) return;
           const ok = writeHandoff(descriptionHandoff(result.inputs, result.score));
           track("sent_to_description_builder", toolSlug);
-          if (ok && builder && isLive(builder)) window.location.href = toolLink(builder);
+          if (ok && builder && isLive(builder)) router.push(`${toolLink(builder)}?from=${toolSlug}`);
           else setMsg(ok ? copy.handoff.builderSaved : copy.storageFailed);
         }}
         disabled={!result}

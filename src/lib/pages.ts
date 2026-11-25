@@ -14,6 +14,7 @@ import { seo as houseRulesGenerator } from "@/app/(pages)/free-tools/house-rules
 import { seo as aiReadinessScore } from "@/app/(pages)/free-tools/airbnb-ai-readiness-score/seo";
 import { seo as titleChecker } from "@/app/(pages)/free-tools/airbnb-title-checker/seo";
 import { seo as photoShotList } from "@/app/(pages)/free-tools/airbnb-photo-shot-list/seo";
+import { seo as descriptionBuilder } from "@/app/(pages)/free-tools/airbnb-description-builder/seo";
 import { seo as ukRules } from "@/app/(pages)/uk-short-let-rules/seo";
 import { seo as guestCommunication } from "@/app/(pages)/services/guest-communication/seo";
 import { seo as listingOptimisation } from "@/app/(pages)/services/listing-optimisation/seo";
@@ -44,6 +45,7 @@ export const allPages: PageSeo[] = [
   aiReadinessScore,
   titleChecker,
   photoShotList,
+  descriptionBuilder,
   ukRules,
   // Service pages
   guestCommunication,

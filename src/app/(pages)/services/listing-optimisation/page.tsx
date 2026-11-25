@@ -6,6 +6,7 @@ import { SmartLink } from "@/components/ui/SmartLink";
 import { isToolLive, toolBySlug, toolLink } from "@/content/tools/catalog";
 import { toolSlug as titleCheckerSlug } from "@/content/tools/titleCheckerId";
 import { toolSlug as photoShotListSlug } from "@/content/tools/photoShotListId";
+import { toolSlug as descriptionBuilderSlug } from "@/content/tools/descriptionBuilderId";
 import { AiSimulator, AuditForm, ReadinessCheck } from "./_components/Interactive";
 import {
   amenities,
@@ -607,6 +608,16 @@ export default function ListingOptimisationPage() {
                 </p>
               </div>
             </div>
+            {isToolLive(descriptionBuilderSlug) && (
+              <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[18px] border border-line bg-white px-6 py-5" data-description-builder-link>
+                <p className="m-0 text-[15px] leading-[1.6] text-ink-copy">
+                  <strong className="text-ink">Write your own in three minutes.</strong> Our free builder turns your facts into all four description sections, within the limits and with no vague words.
+                </p>
+                <SmartLink href={toolLink(toolBySlug(descriptionBuilderSlug)!)} className="btn btn-coral rounded-full">
+                  Build my description (free tool) →
+                </SmartLink>
+              </div>
+            )}
           </div>
         </section>
 

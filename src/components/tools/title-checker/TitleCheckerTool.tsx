@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { compareKey, copy, propertyTypeLabels, storageKey, toolSlug } from "@/content/tools/titleChecker";
 import { toolSlug as scorerSlug } from "@/content/tools/aiReadinessId";
+import { toolSlug as builderSlug } from "@/content/tools/descriptionBuilderId";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/cn";
 import { deviceStorage } from "@/lib/tools/deviceStorage";
@@ -76,14 +77,17 @@ export function TitleCheckerTool({ figures }: { figures: Figures }) {
     let fromScorer = false;
     try {
       const q = new URLSearchParams(window.location.search);
-      fromScorer = q.get("kit") === "more-bookings" || q.get("from") === scorerSlug;
+      fromScorer = q.get("kit") === "more-bookings" || q.get("from") === scorerSlug || q.get("from") === builderSlug;
     } catch {
       // ignore
     }
     const h = fromScorer ? readHandoffData("listing-title", parseTitleImport) : null;
     if (h && h.createdAt !== at) {
       const base = next ?? { ...defaultInputs(), builder: cleanInputs(null, rules).builder };
-      next = { ...base, title: h.data.title, details: h.data.details, showDetails: true, example: false, builder: { ...base.builder, maxGuests: h.data.maxGuests ?? base.builder.maxGuests } };
+      // The standout feature becomes a custom feature in the title builder, if it's short enough.
+      const own = h.data.standout.replace(/^(a|an|the)\s+/i, "").trim();
+      const features = own && own.length <= rules.builder.customMax && base.builder.features.length < rules.builder.maxFeatures && !base.builder.features.some((x) => "custom" in x && x.custom === own) ? [...base.builder.features, { custom: own }] : base.builder.features;
+      next = { ...base, title: h.data.title || base.title, details: h.data.details, showDetails: true, example: false, builder: { ...base.builder, features, maxGuests: h.data.maxGuests ?? base.builder.maxGuests } };
       wasImported = true;
       at = h.createdAt;
       track("import_used", toolSlug);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { isLive, toolById, toolLink } from "@/content/tools/catalog";
 import { copy, sectionTitles, storageKey, toolSlug } from "@/content/tools/houseRules";
 import { track } from "@/lib/analytics";
@@ -47,6 +48,7 @@ export function HouseRulesTool({ figures }: { figures: Figures }) {
   const shownWarnings = useRef(new Set<string>());
   const backRef = useRef<HTMLButtonElement>(null);
   const { setRules } = useHouseRulesResult();
+  const router = useRouter();
 
   /* ---- Load and save (this device only) ---- */
   useEffect(() => {
@@ -146,6 +148,16 @@ export function HouseRulesTool({ figures }: { figures: Figures }) {
       onTxt={() => (downloadText(`${name}-house-rules.txt`, text, "text/plain"), track("file_downloaded", toolSlug, { type: "txt" }))}
       onSignPdf={() => (void downloadSignPdf(answers.propertyName.trim() || "House rules", sign, `${name}-house-rules-sign.pdf`), track("file_downloaded", toolSlug, { type: "sign" }))}
       onToGuide={toGuide}
+      onToBuilder={
+        isLive(toolById("ai-ready-description-builder"))
+          ? () => {
+              // Saves the rules (with their highlights) on this device; the builder's "Import house rule highlights" reads them.
+              writeHandoff(rulesHandoff(rules));
+              track("next_step_clicked", toolSlug, { type: "description-builder" });
+              router.push(toolLink(toolById("ai-ready-description-builder")!));
+            }
+          : undefined
+      }
       guideMessage={guideMessage}
     />
   );

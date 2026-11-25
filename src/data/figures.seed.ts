@@ -4,6 +4,7 @@ import * as ai from "./aiReadiness";
 import * as hr from "./houseRules";
 import * as tc from "./titleChecker";
 import * as ps from "./photoShotList";
+import * as db from "./descriptionBuilder";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -128,6 +129,7 @@ export const figuresSeed: Figure[] = [
   ...aiReadiness(),
   ...titleChecker(),
   ...photoShotList(),
+  ...descriptionBuilder(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -194,6 +196,22 @@ function photoShotList(): Figure[] {
     row("photoShotList.captionLimit", captionLimit, "characters", "Photo shot list planner: caption length shown in the counter (Airbnb doesn't publish a limit)", airbnb, true),
     row("photoShotList.photoCount", { json: photoCount }, null, "Photo shot list planner: recommended photo range (warnings outside it), Airbnb's minimum, and the typical range in the FAQ", airbnb, true),
     row("photoShotList.source", { json: ps.source }, null, "Photo shot list planner: Airbnb's photo guidance", airbnb, true),
+  ];
+}
+
+/** AI-ready description builder: sentence templates, short forms, tone swaps, compaction steps (structured). Limits are the scorer's aiReadiness.limits. */
+function descriptionBuilder(): Figure[] {
+  return [
+    {
+      key: "descriptionBuilder.templates",
+      value: { json: db.templates },
+      unit: null,
+      label: `AI-ready description builder: templates v${db.templates.version} (sentences, hooks, short forms, tone swaps, Make it fit steps, honest notes)`,
+      sourceTitle: "VA for BnB description templates (editable)",
+      sourceUrl: null,
+      lastChecked: "2026-11-25",
+      verify: false,
+    },
   ];
 }
 

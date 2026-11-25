@@ -66,18 +66,30 @@ export function applyTitlePrefill(i: Inputs, data: unknown, model: Pick<Model, "
   const o = data as Record<string, unknown>;
   const str = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
   const title = str(o.title, LIMITS.title);
-  if (!title) return null;
+  // From the AI-ready description builder: the four sections and the details behind them.
+  const sec = o.sections && typeof o.sections === "object" ? (o.sections as Record<string, unknown>) : null;
+  const sections = sec ? { description: str(sec.description, LIMITS.section), space: str(sec.space, LIMITS.section), access: str(sec.access, LIMITS.section), notes: str(sec.notes, LIMITS.section) } : null;
+  if (!title && !sections?.description) return null;
   const place = str(o.place, LIMITS.place);
   const isStop = !!place && findPhrases(place, model.location.transportWords).length > 0;
   const type = str(o.propertyType, 20);
   const beds = typeof o.bedrooms === "number" && Number.isFinite(o.bedrooms) ? Math.min(LIMITS.bedrooms, Math.max(0, Math.round(o.bedrooms))) : null;
+  const list = (v: unknown, max: number) => (Array.isArray(v) ? [...new Set(v.filter((x): x is string => typeof x === "string"))].slice(0, max) : null);
+  const guests = typeof o.maxGuests === "number" && o.maxGuests > 0 ? Math.min(LIMITS.guests, Math.round(o.maxGuests)) : null;
   return {
     ...i,
-    title,
+    title: title || i.title,
     town: str(o.town, LIMITS.place) || i.town,
-    station: place && isStop ? place : i.station,
-    landmark: place && !isStop ? place : i.landmark,
+    station: str(o.station, LIMITS.place) || (place && isStop ? place : i.station),
+    landmark: str(o.landmark, LIMITS.place) || (place && !isStop ? place : i.landmark),
     propertyType: types.includes(type) ? type : i.propertyType,
     bedrooms: beds ?? i.bedrooms,
+    ...(sections ? { sections, oneBox: false } : {}),
+    ...(guests ? { maxGuests: guests } : {}),
+    ...(list(o.guestTypes, 3) ? { guestTypes: list(o.guestTypes, 3)! } : {}),
+    ...(list(o.amenities, 40) ? { amenities: list(o.amenities, 40)! } : {}),
+    ...(typeof o.parking === "string" ? { parking: str(o.parking, 20) } : {}),
+    ...(typeof o.bedSizes === "boolean" ? { bedSizes: o.bedSizes } : {}),
+    ...(typeof o.honest === "boolean" ? { honest: o.honest } : {}),
   };
 }

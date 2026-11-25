@@ -10,6 +10,7 @@ import { toolPath as houseRulesPath, toolSlug as houseRulesSlug } from "./houseR
 import { toolPath as aiReadinessPath, toolSlug as aiReadinessSlug } from "./aiReadinessId";
 import { toolPath as titleCheckerPath, toolSlug as titleCheckerSlug } from "./titleCheckerId";
 import { toolPath as photoShotListPath, toolSlug as photoShotListSlug } from "./photoShotListId";
+import { toolPath as descriptionBuilderPath, toolSlug as descriptionBuilderSlug } from "./descriptionBuilderId";
 
 /**
  * Every free tool. Used by the tools hub, tool pages and the links into tools
@@ -146,7 +147,15 @@ export const tools: Tool[] = [
     nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },
   },
   T("time", "Guest message generator", "What do I say to this guest?", 1, "Text to copy", "All UK", 4, "message template guest"),
-  { ...T("bookings", "AI-ready description builder", "How do I write my description?", 3, "Text to copy", "All UK", 4, "description write ai"), kit: "more-bookings", related: ["ai-readiness-listing-scorer", "airbnb-title-checker", "photo-shot-list-planner"] },
+  {
+    ...T("bookings", "AI-ready description builder", "How do I write my description?", 3, "Text to copy", "All UK", 4, "description listing description write my listing the space guest access ai search"),
+    slug: descriptionBuilderSlug,
+    href: descriptionBuilderPath,
+    status: "coming-soon",
+    kit: "more-bookings",
+    related: ["ai-readiness-listing-scorer", "airbnb-title-checker", "photo-shot-list-planner"],
+    nextStep: { label: "Score this description", href: "/free-tools/airbnb-ai-readiness-score" },
+  },
   {
     ...T("bookings", "Photo shot list planner", "Which photos, in what order?", 2, "Shot list + PDF", "All UK", 4, "photos photo order cover photo photo tour captions photography"),
     slug: photoShotListSlug,

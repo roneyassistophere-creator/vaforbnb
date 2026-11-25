@@ -26,6 +26,8 @@ export type Rules = {
   /** "Show this fee in your listing…" notes, by answer. */
   notes: { source: "lateCheckout" | "petFee"; text: string }[];
   lineCount: number;
+  /** Structured highlights for other tools (the AI-ready description builder's "Other things to note"). The parties rule is always included. */
+  highlights: { checkin: string; checkout: string; pets: Answers["pets"]; maxPets: number | null; parties: boolean };
 };
 
 /** Which templates apply to these answers (keys), plus host text that becomes rules. */
@@ -120,7 +122,8 @@ export function buildRules(a: Answers, content: Content): Rules {
   if (a.lateCheckout === "fee") notes.push({ source: "lateCheckout", text: content.limits.feeNote });
   if (a.pets === "yes" && a.petFee) notes.push({ source: "petFee", text: content.limits.feeNote });
 
-  return { title: a.propertyName.trim() ? `House rules – ${a.propertyName.trim()}` : "House rules", sections, warnings, notes, lineCount };
+  const highlights = { checkin: a.checkin, checkout: a.checkout, pets: a.pets, maxPets: a.pets === "yes" ? a.maxPets : null, parties: true };
+  return { title: a.propertyName.trim() ? `House rules – ${a.propertyName.trim()}` : "House rules", sections, warnings, notes, lineCount, highlights };
 }
 
 /** Plain text with headings (Copy, .txt download). */
@@ -168,7 +171,7 @@ export function signRules(r: Rules): Line[] {
 /** The rules in the shared "send to another tool" format. */
 export function rulesHandoff(r: Rules, now?: Date): Handoff {
   const sections: HandoffSection[] = r.sections.map((s) => ({ key: s.key, heading: s.heading, lines: s.lines.map((l) => l.text) }));
-  return makeHandoff("house-rules", "house-rules-generator", { title: r.title, sections }, now);
+  return makeHandoff("house-rules", "house-rules-generator", { title: r.title, sections, highlights: r.highlights }, now);
 }
 
 /** Distinct rules flagged (for "What this means"). */
