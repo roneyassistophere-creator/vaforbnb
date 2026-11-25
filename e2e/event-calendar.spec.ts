@@ -199,8 +199,8 @@ test("live: 6th in Get more bookings; linked from Pricing optimisation, Who we h
   const card = page.locator("#uk-event-calendar");
   await expect(card).toHaveAttribute("href", PATH);
   await expect(card).not.toContainText("Coming soon");
-  const names = await page.locator("#all [id] p.font-extrabold").allTextContents();
-  expect(names[5]).toBe("UK event calendar");
+  // The ?job filter applies just after load: wait for the filtered list.
+  await expect.poll(async () => (await page.locator("#all [id] p.font-extrabold").allTextContents())[5]).toBe("UK event calendar");
   await expect(page.locator(`footer a[href="${PATH}"]`)).toBeVisible();
   await page.goto("/services/pricing-optimisation");
   await expect(page.locator("[data-event-calendar-link] a")).toHaveAttribute("href", PATH);

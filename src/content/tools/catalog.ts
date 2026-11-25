@@ -106,7 +106,7 @@ export const tools: Tool[] = [
     ...T("numbers", "Short-let profit calculator", "Am I actually making money?", 3, "Result + PDF", "All UK", 1, "profit airbnb calculator holiday let calculator break-even occupancy tax cash flow roi money"),
     slug: profitSlug,
     href: profitPath,
-    status: "coming-soon",
+    status: "live",
     badge: "Popular",
     kit: ["new-host", "growing"],
     related: ["direct-booking-savings", "long-stay-discount-calculator", "short-let-vs-long-let"],

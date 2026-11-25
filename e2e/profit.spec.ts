@@ -192,3 +192,30 @@ test.describe("phone (390px)", () => {
     expect(small).toEqual([]);
   });
 });
+
+test("live: first in Know my numbers with Popular; linked from Home, Finance check, Pricing, Who we help, the kits and the sitemap", async ({ page, request }) => {
+  await page.goto("/free-tools?job=know-my-numbers");
+  const card = page.locator("#short-let-profit-calculator");
+  await expect(card).toHaveAttribute("href", PATH);
+  await expect(card).toContainText("Popular");
+  await expect(card).not.toContainText("Coming soon");
+  await expect.poll(async () => (await page.locator("#all [id] p.font-extrabold").allTextContents()).slice(0, 2)).toEqual(["Short-let profit calculator", "Direct booking savings"]);
+  await expect(page.locator(`a[href="${PATH}?kit=growing"]`).first()).toBeAttached();
+  await page.goto("/");
+  await expect(page.locator(`#free a[href="${PATH}"]`)).toBeVisible();
+  await page.goto("/services/finance-check");
+  await expect(page.locator("[data-profit-link]")).toHaveText("Work out your real profit");
+  await page.goto("/pricing");
+  await expect(page.locator("[data-profit-link]").first()).toHaveAttribute("href", PATH);
+  await page.goto("/who-we-help");
+  for (const tab of ["tab-side", "tab-sa"]) {
+    await page.locator(`#${tab}`).click();
+    await expect(page.locator(`#persona-panel a[href="${PATH}"]`)).toBeVisible();
+  }
+  await page.goto("/free-tools/uk-short-let-compliance-checker");
+  await expect(page.locator(`a[href="${PATH}?kit=new-host"]`).first()).toBeAttached();
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).toContain(`${PATH}</loc>`);
+  const html = await (await request.get(PATH)).text();
+  expect(html).not.toMatch(/<meta name="robots" content="noindex/);
+});
