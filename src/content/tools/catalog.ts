@@ -200,7 +200,7 @@ export const tools: Tool[] = [
     ...T("bookings", "UK event calendar", "What events are coming near me?", 1, "Calendar + list", "All UK", 5, "events festivals concerts football graduation christmas markets bank holidays demand"),
     slug: eventCalendarSlug,
     href: eventCalendarPath,
-    status: "coming-soon",
+    status: "live",
     related: ["long-stay-discount-calculator", "short-let-profit-calculator", "visitor-levy-calculator"],
     nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },
   },

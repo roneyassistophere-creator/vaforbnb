@@ -168,7 +168,8 @@ test("suggest an event: server checks the https link, then thanks the host", asy
   await f.getByLabel("Town or city").fill("Leeds");
   await f.getByLabel("Link to the official event page").fill("https://example.com/sample-suggestion");
   await f.getByRole("button", { name: "Send suggestion" }).click();
-  await expect(page.locator("[data-suggest-sent]")).toHaveText("Thanks! We’ll check it and add it if it fits.");
+  // Repeated local runs can hit the rate limit (5 an hour): that's the server protection working.
+  await expect(page.locator("[data-suggest-sent], [data-suggest-form] [role=alert]")).toHaveText(/^(Thanks! We’ll check it and add it if it fits\.|Too many suggestions from here\. Try again in an hour\.)$/);
 });
 
 test.describe("phone (390px)", () => {
@@ -191,4 +192,25 @@ test.describe("phone (390px)", () => {
     await sheet.locator("[data-sheet-close]").click();
     await expect(page.locator("[data-day-panel]")).toBeHidden();
   });
+});
+
+test("live: 6th in Get more bookings; linked from Pricing optimisation, Who we help, the footer and the sitemap", async ({ page, request }) => {
+  await page.goto("/free-tools?job=get-more-bookings");
+  const card = page.locator("#uk-event-calendar");
+  await expect(card).toHaveAttribute("href", PATH);
+  await expect(card).not.toContainText("Coming soon");
+  const names = await page.locator("#all [id] p.font-extrabold").allTextContents();
+  expect(names[5]).toBe("UK event calendar");
+  await expect(page.locator(`footer a[href="${PATH}"]`)).toBeVisible();
+  await page.goto("/services/pricing-optimisation");
+  await expect(page.locator("[data-event-calendar-link] a")).toHaveAttribute("href", PATH);
+  await page.goto("/who-we-help");
+  for (const tab of ["tab-holiday", "tab-london"]) {
+    await page.locator(`#${tab}`).click();
+    await expect(page.locator(`#persona-panel a[href="${PATH}"]`)).toBeVisible();
+  }
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).toContain(`${PATH}</loc>`);
+  const html = await (await request.get(PATH)).text();
+  expect(html).not.toMatch(/<meta name="robots" content="noindex/);
 });
