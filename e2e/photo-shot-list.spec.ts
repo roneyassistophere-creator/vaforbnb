@@ -165,7 +165,10 @@ test("arrive from the kit with imported data, Undo import, then continue to the 
   const next = page.locator('[data-next-step="kit"]');
   await expect(next).toContainText("Next in your kit: Long-stay discount calculator");
   await next.locator("[data-kit-next]").click();
-  await expect(page.locator("[data-next-saved]")).toContainText("Saved on this device");
+  // The calculator is live: the kit continues to step 5.
+  await expect(page).toHaveURL("/free-tools/long-stay-discount-calculator?kit=more-bookings");
+  await expect(page.locator('[data-tool="long-stay-discount-calculator"][data-ready]')).toBeVisible();
+  await expect(page.locator("[data-kit-badge]:visible")).toHaveText("Get more bookings kit · step 5");
   const basics = await page.evaluate(() => JSON.parse(localStorage.getItem("vaforbnb:handoff:kit-basics") ?? "null"));
   expect(Object.keys(basics.data).sort()).toEqual(["bedrooms", "guestTypes"]);
   noLeaks(seen);

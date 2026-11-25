@@ -170,7 +170,7 @@ export const tools: Tool[] = [
     ...T("bookings", "Long-stay discount calculator", "Should I discount a 28-night stay?", 2, "Result", "All UK", 3, "monthly discount weekly discount long stay 28 nights contractors mid-term"),
     slug: longStaySlug,
     href: longStayPath,
-    status: "coming-soon",
+    status: "live",
     kit: "more-bookings",
     related: ["short-let-profit-calculator", "london-90-night-counter", "short-let-vs-long-let"],
     nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },

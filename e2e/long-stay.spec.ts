@@ -168,14 +168,22 @@ test("page: SEO, structured data and static sections are in the HTML without Jav
   await ctx.close();
 });
 
-test("hub: 5th in Get more bookings, Coming soon until set live; the Rules Hub tenancy anchor opens", async ({ page }) => {
+test("hub: 5th in Get more bookings and live; linked from Pricing optimisation and Who we help; the Rules Hub tenancy anchor opens", async ({ page }) => {
   await page.goto("/free-tools?job=get-more-bookings");
   await expect(page.getByRole("button", { name: /Get more bookings/ })).toHaveAttribute("aria-pressed", "true");
   const card = page.locator("#long-stay-discount-calculator");
-  await expect(card).toContainText("Coming soon");
+  await expect(card).toHaveAttribute("href", PATH);
+  await expect(card).not.toContainText("Coming soon");
   await expect(card).toContainText("Should I discount a 28-night stay?");
   const names = await page.locator("#all [id] p.font-extrabold").allTextContents();
   expect(names.slice(0, 5)).toEqual(["AI-readiness listing scorer", "Airbnb title checker", "AI-ready description builder", "Photo shot list planner", "Long-stay discount calculator"]);
+  await page.goto("/services/pricing-optimisation");
+  await expect(page.locator("[data-long-stay-link] a")).toHaveAttribute("href", PATH);
+  await page.goto("/who-we-help");
+  for (const tab of ["tab-sa", "tab-london"]) {
+    await page.locator(`#${tab}`).click();
+    await expect(page.locator(`#persona-panel a[href="${PATH}"]`)).toBeVisible();
+  }
   await page.goto("/uk-short-let-rules#renters-rights-act");
   await expect(page.getByText("Is rent-to-rent serviced accommodation still allowed after the Renters’ Rights Act?")).toBeVisible();
 });
