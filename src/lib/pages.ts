@@ -16,6 +16,7 @@ import { seo as titleChecker } from "@/app/(pages)/free-tools/airbnb-title-check
 import { seo as photoShotList } from "@/app/(pages)/free-tools/airbnb-photo-shot-list/seo";
 import { seo as descriptionBuilder } from "@/app/(pages)/free-tools/airbnb-description-builder/seo";
 import { seo as longStay } from "@/app/(pages)/free-tools/long-stay-discount-calculator/seo";
+import { seo as eventCalendar } from "@/app/(pages)/free-tools/uk-event-calendar/seo";
 import { seo as ukRules } from "@/app/(pages)/uk-short-let-rules/seo";
 import { seo as guestCommunication } from "@/app/(pages)/services/guest-communication/seo";
 import { seo as listingOptimisation } from "@/app/(pages)/services/listing-optimisation/seo";
@@ -48,6 +49,7 @@ export const allPages: PageSeo[] = [
   photoShotList,
   descriptionBuilder,
   longStay,
+  eventCalendar,
   ukRules,
   // Service pages
   guestCommunication,

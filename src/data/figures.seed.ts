@@ -6,6 +6,7 @@ import * as tc from "./titleChecker";
 import * as ps from "./photoShotList";
 import * as db from "./descriptionBuilder";
 import * as ls from "./longStay";
+import * as evd from "./events";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -132,6 +133,7 @@ export const figuresSeed: Figure[] = [
   ...photoShotList(),
   ...descriptionBuilder(),
   ...longStay(),
+  ...eventCalendar(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -230,6 +232,15 @@ function longStay(): Figure[] {
     { key: "fees.airbnbHostOnlyPercent", value: 15.5, unit: "%", label: "Airbnb host-only service fee (preset in the long-stay calculator)", ...fees, lastChecked: d, verify: true },
     { key: "fees.directCardPercent", value: 1.5, unit: "%", label: "Direct booking card processing fee, typical UK rate excluding any fixed fee per payment (preset)", ...ours, lastChecked: d, verify: true },
     { key: "longStay.settings", value: { json: ls.settings }, unit: null, label: `Long-stay calculator: defaults, sensitivity steps and note triggers v${ls.settings.version}`, ...ours, lastChecked: d, verify: false },
+  ];
+}
+
+/** UK event calendar: settings (edited in Admin › Settings) and the "Events last reviewed" date. */
+function eventCalendar(): Figure[] {
+  const ours = { sourceTitle: "VA for BnB event calendar settings (editable in the admin area)", sourceUrl: null };
+  return [
+    { key: "events.settings", value: { json: evd.settings }, unit: null, label: `UK event calendar: settings v${evd.settings.version} (distances, date range, check intervals, launch rule, demand criteria)`, ...ours, lastChecked: "2026-11-26", verify: false },
+    { key: "events.lastReviewed", value: "", unit: "date", label: "UK event calendar: events last reviewed (set by a bulk check covering most upcoming events, or manually)", ...ours, lastChecked: "2026-11-26", verify: false },
   ];
 }
 

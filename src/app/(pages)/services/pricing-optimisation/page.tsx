@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { isToolLive, toolBySlug, toolLink } from "@/content/tools/catalog";
+import { isToolLive, toolById, toolBySlug, toolLink } from "@/content/tools/catalog";
 import { toolSlug as longStaySlug } from "@/content/tools/longStayId";
 import type { ReactNode } from "react";
 import { brand } from "@/config/brand";
@@ -514,6 +514,14 @@ export default function PricingOptimisationPage() {
                 </div>
               ))}
             </div>
+            {isToolLive("uk-event-calendar") && (
+              <p className="m-0 mt-5 text-[15px] font-semibold text-ink-copy" data-event-calendar-link>
+              See what’s coming up near your property:{" "}
+              <Link href={toolLink(toolById("uk-event-calendar")!)} className="font-extrabold text-brand">
+                free UK event calendar →
+              </Link>
+            </p>
+            )}
             <div className="mt-6 grid grid-cols-1 gap-3.5 md:grid-cols-2">
               <div className="rounded-2xl bg-[#F5F6F7] p-6">
                 <p className="m-0 mb-2 text-base font-extrabold">For each event we decide</p>

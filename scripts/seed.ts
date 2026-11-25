@@ -9,7 +9,8 @@
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { complianceRules, figures } from "../src/db/schema";
+import { bankHolidays, complianceRules, eventCategories, eventCities, figures } from "../src/db/schema";
+import * as ev from "../src/data/events";
 import { rulesSeed } from "../src/data/compliance/rules.seed";
 import { figuresSeed } from "../src/data/figures.seed";
 
@@ -90,6 +91,13 @@ async function main() {
     await db.insert(figures).values(figureRows).onConflictDoNothing();
     await db.insert(complianceRules).values(ruleRows).onConflictDoNothing();
   }
+  // Event calendar data is managed in the admin area: the seed only ever adds rows that are missing (even with --update).
+  await db.insert(eventCities).values(ev.cities.map((c) => ({ ...c, covered: true }))).onConflictDoNothing();
+  await db.insert(eventCategories).values(ev.categories).onConflictDoNothing();
+  await db
+    .insert(bankHolidays)
+    .values(ev.bankHolidays.map((b) => ({ ...b, source: ev.bankHolidaySource, year: Number(b.date.slice(0, 4)) })))
+    .onConflictDoNothing();
   const [{ n: nf }] = await db.execute<{ n: number }>(sql`select count(*)::int as n from figures`);
   const [{ n: nr }] = await db.execute<{ n: number }>(sql`select count(*)::int as n from compliance_rules`);
   console.log(`Seed ${update ? "updated" : "applied"}: ${nf} figures, ${nr} compliance rules in the database.`);

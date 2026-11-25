@@ -12,6 +12,7 @@ import { toolPath as titleCheckerPath, toolSlug as titleCheckerSlug } from "./ti
 import { toolPath as photoShotListPath, toolSlug as photoShotListSlug } from "./photoShotListId";
 import { toolPath as descriptionBuilderPath, toolSlug as descriptionBuilderSlug } from "./descriptionBuilderId";
 import { toolPath as longStayPath, toolSlug as longStaySlug } from "./longStayId";
+import { toolPath as eventCalendarPath, toolSlug as eventCalendarSlug } from "./eventCalendarId";
 
 /**
  * Every free tool. Used by the tools hub, tool pages and the links into tools
@@ -99,7 +100,7 @@ export const tools: Tool[] = [
     related: ["airbnb-title-checker", "ai-ready-description-builder", "photo-shot-list-planner"],
     nextStep: { label: "Free AI-readiness audit", href: "/services/listing-optimisation#audit" },
   },
-  { ...T("numbers", "Short-let profit calculator", "Am I actually making money?", 3, "Result + PDF", "All UK", 1, "profit tax break-even money"), related: ["visitor-levy-calculator", "long-stay-discount-calculator"] },
+  { ...T("numbers", "Short-let profit calculator", "Am I actually making money?", 3, "Result + PDF", "All UK", 1, "profit tax break-even money"), related: ["visitor-levy-calculator", "long-stay-discount-calculator", "uk-event-calendar"] },
   {
     ...T("legal", "Business rates qualifier", "Do I qualify for business rates?", 1, "Result", "England · Scotland · Wales", 2, "business rates council tax 140 70 252 182 holiday let second home premium"),
     slug: businessRatesSlug,
@@ -172,7 +173,7 @@ export const tools: Tool[] = [
     href: longStayPath,
     status: "live",
     kit: "more-bookings",
-    related: ["short-let-profit-calculator", "london-90-night-counter", "short-let-vs-long-let"],
+    related: ["short-let-profit-calculator", "london-90-night-counter", "short-let-vs-long-let", "uk-event-calendar"],
     nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },
   },
   {
@@ -195,7 +196,14 @@ export const tools: Tool[] = [
   { ...T("time", "Welcome guide builder", "What goes in my welcome guide?", 5, "Printable PDF", "All UK", 4, "welcome book guide"), kit: "new-host", related: ["certificate-reminders", "guest-register-builder"] },
   { ...T("time", "Cleaning checklist generator", "What should my cleaner check?", 2, "Printable PDF", "All UK", 4, "cleaning checklist"), related: ["certificate-reminders", "photo-shot-list-planner"] },
   T("time", "Linen and supplies calculator", "How much linen and stock do I need?", 2, "Result + spreadsheet", "All UK", 4, "linen towels supplies restock"),
-  T("bookings", "UK event calendar", "What events are coming near me?", 1, "Result", "All UK", 5, "events festivals calendar"),
+  {
+    ...T("bookings", "UK event calendar", "What events are coming near me?", 1, "Calendar + list", "All UK", 5, "events festivals concerts football graduation christmas markets bank holidays demand"),
+    slug: eventCalendarSlug,
+    href: eventCalendarPath,
+    status: "coming-soon",
+    related: ["long-stay-discount-calculator", "short-let-profit-calculator", "visitor-levy-calculator"],
+    nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },
+  },
 ];
 
 export const toolBySlug = (slug: string) => tools.find((t) => t.slug === slug);

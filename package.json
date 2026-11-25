@@ -17,7 +17,9 @@
     "db:seed": "tsx scripts/seed.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "admin:create": "tsx scripts/admin-create.ts",
+    "db:seed:sample-events": "tsx scripts/seed-sample-events.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1176.0",

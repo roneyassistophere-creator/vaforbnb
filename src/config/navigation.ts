@@ -1,5 +1,6 @@
 import { brand } from "./brand";
 import { packages, servicesByPack, serviceHref } from "@/content/services";
+import { toolById, toolLink } from "@/content/tools/catalog";
 
 /** Every page route in one place. Change a URL here and all links follow. */
 export const routes = {
@@ -84,6 +85,7 @@ export const footerColumns: FooterColumn[] = [
     links: [
       { label: "UK rules hub", href: routes.ukRules },
       { label: "Free tools", href: routes.freeTools },
+      { label: "UK event calendar", href: toolLink(toolById("uk-event-calendar")!) },
       { label: "Checklists", href: anchors.rulesChecklist },
       { label: "Finance sheet", href: brand.downloads.financeSheet },
     ],

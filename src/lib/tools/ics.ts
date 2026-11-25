@@ -12,6 +12,8 @@ export type IcsEvent = {
   uid: string;
   /** All-day date, YYYY-MM-DD. */
   date: string;
+  /** Last day for a multi-day all-day event (inclusive). Defaults to `date`. */
+  endDate?: string;
   title: string;
   description?: string;
   url?: string;
@@ -72,7 +74,7 @@ export function buildIcs(events: IcsEvent[], opts: IcsOptions): string {
       `UID:${e.uid}`,
       `DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${icsDate(e.date)}`,
-      `DTEND;VALUE=DATE:${icsDate(addDays(e.date, 1))}`,
+      `DTEND;VALUE=DATE:${icsDate(addDays(e.endDate && e.endDate > e.date ? e.endDate : e.date, 1))}`,
       `SUMMARY:${escapeIcsText(e.title)}`,
     );
     if (e.description) lines.push(`DESCRIPTION:${escapeIcsText(e.description)}`);
