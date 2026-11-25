@@ -1,0 +1,156 @@
+# --------------------------------------------------------------------------
+# VA for BnB: local stack
+#
+#   docker compose up                 → database + storage only
+#                                       (run `npm run dev` on your machine)
+#   docker compose --profile dev up   → everything, site with hot reload
+#   docker compose --profile prod up --build
+#                                     → everything, production build
+#
+# Tip: set COMPOSE_PROFILES=dev in .env so plain `docker compose up`
+# starts the whole thing. Settings come from .env (copy .env.example).
+#
+# Services
+#   db            PostgreSQL
+#   storage       SeaweedFS: S3-compatible stand-in for Cloudflare R2
+#   storage-init  creates the bucket, then exits
+#   migrate       applies database migrations and seed data, then exits
+#   app / app-prod  the Next.js site
+# --------------------------------------------------------------------------
+
+name: vaforbnb
+
+x-app-env: &app-env
+  # Inside Docker, services reach each other by service name.
+  DATABASE_URL: postgres://${POSTGRES_USER:-vaforbnb}:${POSTGRES_PASSWORD:-vaforbnb}@db:5432/${POSTGRES_DB:-vaforbnb}
+  S3_ENDPOINT: ${S3_DOCKER_ENDPOINT:-http://storage:8333}
+  # Browsers can't resolve "storage", so signed URLs use the host address.
+  S3_PUBLIC_ENDPOINT: ${S3_PUBLIC_ENDPOINT:-http://localhost:8333}
+  S3_REGION: ${S3_REGION:-auto}
+  S3_BUCKET: ${S3_BUCKET:-vaforbnb}
+  S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-localdev}
+  S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-localdev-secret}
+  S3_FORCE_PATH_STYLE: ${S3_FORCE_PATH_STYLE:-true}
+  S3_PUBLIC_URL: ${S3_PUBLIC_URL:-}
+  NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-vaforbnb}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vaforbnb}
+      POSTGRES_DB: ${POSTGRES_DB:-vaforbnb}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  storage:
+    image: chrislusf/seaweedfs:${SEAWEEDFS_VERSION:-latest}
+    restart: unless-stopped
+    environment:
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-localdev}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-localdev-secret}
+    # Writes the S3 credentials file from env, then starts an all-in-one server.
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        printf '{"identities":[{"name":"app","credentials":[{"accessKey":"%s","secretKey":"%s"}],"actions":["Admin","Read","Write","List","Tagging"]}]}' \
+          "$$S3_ACCESS_KEY_ID" "$$S3_SECRET_ACCESS_KEY" > /tmp/s3.json
+        exec weed server -dir=/data -ip.bind=0.0.0.0 -master.volumeSizeLimitMB=1024 -volume.max=0 \
+          -s3 -s3.port=8333 -s3.config=/tmp/s3.json
+    ports:
+      - "${S3_PORT:-8333}:8333"
+    volumes:
+      - storage-data:/data
+
+  storage-init:
+    image: amazon/aws-cli:latest
+    depends_on:
+      - storage
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-localdev}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-localdev-secret}
+      AWS_DEFAULT_REGION: us-east-1
+      BUCKET: ${S3_BUCKET:-vaforbnb}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        for i in $$(seq 1 60); do
+          aws --endpoint-url http://storage:8333 s3api list-buckets >/dev/null 2>&1 && break
+          echo "waiting for storage..."; sleep 2
+        done
+        aws --endpoint-url http://storage:8333 s3api head-bucket --bucket "$$BUCKET" 2>/dev/null \
+          || aws --endpoint-url http://storage:8333 s3api create-bucket --bucket "$$BUCKET"
+        echo "bucket ready: $$BUCKET"
+    restart: "no"
+
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-vaforbnb}:${POSTGRES_PASSWORD:-vaforbnb}@db:5432/${POSTGRES_DB:-vaforbnb}
+    volumes:
+      # Picks up newly generated migrations without rebuilding the image.
+      - ./drizzle:/app/drizzle:ro
+      - ./src/db:/app/src/db:ro
+      - ./src/data:/app/src/data:ro
+      - ./src/lib/tools:/app/src/lib/tools:ro
+      - ./scripts:/app/scripts:ro
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    profiles: ["dev"]
+    build:
+      context: .
+      target: dev
+    environment:
+      <<: *app-env
+      # Docker Desktop on Windows/macOS doesn't pass file events to containers.
+      WATCHPACK_POLLING: "true"
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      # Keep the container's own node_modules and build cache.
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      storage-init:
+        condition: service_completed_successfully
+
+  app-prod:
+    profiles: ["prod"]
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-http://localhost:3000}
+    restart: unless-stopped
+    environment:
+      <<: *app-env
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      storage-init:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:
+  storage-data:

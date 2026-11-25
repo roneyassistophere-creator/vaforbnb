@@ -1,0 +1,40 @@
+/** SVG path data (24×24 viewBox, stroked) used across the site. */
+export const ICONS = {
+  chat: "M4 5h16v11H8l-4 4z",
+  list: "M5 4h14v16H5z M9 9h6 M9 13h6",
+  tag: "M3 12l9-9h8v8l-9 9z M15 8h.01",
+  clean: "M4 20h16 M7 20V10h10v10 M10 10V4h4v6",
+  tool: "M14 6l4 4-9 9H5v-4z",
+  star: "M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z",
+  pound: "M16 6a4 4 0 0 0-7 2.5V19 M6 13h7 M6 19h12",
+  web: "M3 12h18 M12 3a14 14 0 0 1 0 18 M12 3a14 14 0 0 0 0 18 M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18",
+  search: "M11 4a7 7 0 1 0 0 14a7 7 0 1 0 0-14 M20 20l-4-4",
+  share:
+    "M18 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6 M6 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6 M18 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6 M8.6 13.5l6.8 4 M15.4 6.5l-6.8 4",
+  book: "M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z M8 7h6",
+  bookLines: "M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2z M8 7h6 M8 11h6",
+  key: "M8 15a4 4 0 1 0 0-8a4 4 0 0 0 0 8 M11 11h10 M17 11v4",
+  check: "M4 5h16v16H4z M8 12l3 3 5-6",
+  calc: "M5 3h14v18H5z M8 7h8 M8 12h2 M14 12h2 M8 16h2 M14 16h2",
+  spark: "M12 3v4 M12 17v4 M3 12h4 M17 12h4 M6 6l2.5 2.5 M15.5 15.5L18 18 M6 18l2.5-2.5 M15.5 8.5L18 6",
+  sheet: "M4 4h16v16H4z M4 10h16 M10 4v16",
+  clock: "M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18 M12 7v5l3 2",
+  lock: "M6 11V8a6 6 0 0 1 12 0v3 M5 11h14v10H5z",
+  ok: "M4 12l5 5L20 6",
+  doc: "M6 3h9l4 4v14H6z M9 12h6 M9 16h6",
+  team: "M16 11a4 4 0 1 0-8 0 M4 21a8 8 0 0 1 16 0",
+  chart: "M4 20V10 M10 20V4 M16 20v-7 M22 20H2",
+  calendar: "M3 10h18 M7 3v4 M17 3v4 M5 5h14v16H5z M9 15l2 2 4-4",
+  shield: "M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z M9 12l2 2 4-4",
+  trend: "M4 17l5-5 4 3 7-8 M15 7h5v5",
+  stopwatch: "M12 7v5l3 2 M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z",
+  grid: "M4 4h7v7H4z M13 4h7v7h-7z M4 13h7v7H4z M13 13h7v7h-7z",
+  // personas
+  house: "M4 20V9l8-5 8 5v11 M9 20v-6h6v6",
+  cottage: "M3 11l9-7 9 7 M5 10v10h14V10 M10 20v-5h4v5 M16 6V3h2v5",
+  building: "M4 21V5h7v16 M11 21V9h9v12 M7 9h1 M7 13h1 M7 17h1 M15 13h1 M15 17h1",
+  manager: "M16 11a4 4 0 1 0-8 0 M4 21a8 8 0 0 1 16 0 M19 8l2 2-2 2",
+  london: "M12 3l2 4h-4z M10 7h4v14h-4z M6 21V13h4 M14 13h4v8 M3 21h18",
+} as const;
+
+export type IconName = keyof typeof ICONS;

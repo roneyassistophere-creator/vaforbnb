@@ -1,0 +1,1 @@
+ALTER TABLE "figures" ADD COLUMN "unit" text;

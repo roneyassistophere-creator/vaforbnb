@@ -1,26 +1,521 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ==========================================================================
+   VA for BnB — Theme
+   --------------------------------------------------------------------------
+   1. Design tokens (colours, fonts, breakpoints) exposed to Tailwind.
+   2. Page "flavors": each reference design uses its own display font, heading
+      scale, button radius and page background. These live in one place so the
+      whole site can be unified later by editing a single block.
+   3. Shared component classes used across every page.
+   Keep colours in sync with `brand.colors` in src/config/brand.ts.
+   ========================================================================== */
+
+@theme {
+  /* Drop Tailwind's default palette so only brand colours are available. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+  /* 900px, in rem so it sorts correctly against Tailwind's default breakpoints. */
+  --breakpoint-md: 56.25rem;
+  /* 1180px: wide enough for the service-page sidebar plus a 900px+ content column. */
+  --breakpoint-toc: 73.75rem;
+
+  /* Ink (navy) */
+  --color-ink: #14212b;
+  --color-ink-hover: #24343f;
+  --color-ink-deep: #0e1820;
+  --color-ink-soft: #34404a;
+  --color-ink-copy: #3a4650;
+  --color-ink-prose: #2b3742;
+
+  /* Text greys */
+  --color-body: #46525c;
+  --color-muted: #5f6b75;
+  --color-subtle: #6b7680;
+  --color-faint: #9aa6af;
+  --color-mist: #c8d1d8;
+
+  /* Coral (primary accent) */
+  --color-coral: #f0595a;
+  --color-coral-hover: #e54a4b;
+  --color-brand: #b8383a;
+  --color-brand-deep: #8e2729;
+  --color-coral-50: #fdecec;
+  --color-coral-25: #fff7f7;
+  --color-coral-100: #f8d3d3;
+  --color-coral-200: #f8a3a4;
+
+  /* Warm neutrals */
+  --color-sand: #f7f3ec;
+  --color-sand-200: #f2eee6;
+  --color-sand-line: #ece7de;
+  --color-sand-border: #dcd6cb;
+  --color-sand-edge: #ece4d6;
+  --color-sand-rule: #e6e1d6;
+  --color-sand-row: #f0ece4;
+  --color-cream: #fbfaf7;
+  --color-cream-2: #faf8f3;
+  --color-linen: #e8e4dc;
+  --color-linen-row: #eeece7;
+
+  /* Cool neutrals */
+  --color-cloud: #f4f5f7;
+  --color-cloud-2: #f6f7f9;
+  --color-fog: #f2f4f6;
+  --color-fog-2: #f2f3f5;
+  --color-line: #e6e8eb;
+  --color-line-2: #e3e6ea;
+  --color-line-3: #eceef0;
+  --color-line-4: #eef0f2;
+  --color-line-5: #dadfe3;
+  --color-line-6: #dadde1;
+  --color-line-strong: #cdd3d8;
+  --color-line-box: #b9c1c8;
+
+  /* Status */
+  --color-green: #1f6b45;
+  --color-green-dot: #2e8b57;
+  --color-green-50: #e7f3ec;
+  --color-green-100: #e3f3ea;
+  --color-green-25: #eaf6ef;
+  --color-violet: #5b3fa0;
+  --color-violet-deep: #4b3a75;
+  --color-violet-50: #f0ecf8;
+  --color-violet-75: #eeeaf6;
+  --color-violet-100: #dcd3ee;
+  --color-violet-25: #f8f6fc;
+  --color-amber: #6b4a00;
+  --color-amber-50: #fff1cc;
+  --color-amber-25: #fff7e0;
+  --color-steel-50: #e8eef3;
+  --color-steel-100: #eef1f4;
+
+  /* Dark surfaces */
+  --color-night-line: #22313c;
+  --color-night-2: #2a3a46;
+  --color-night-3: #3a4b57;
+  --color-night-4: #2b3b47;
+  --color-night-field: #1d2d39;
+  --color-night-field-line: #3a4a56;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-sora: var(--font-sora), var(--font-manrope), sans-serif;
+  --font-jakarta: var(--font-plus-jakarta), var(--font-manrope), sans-serif;
+  --font-outfit: var(--font-outfit), var(--font-manrope), sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+  --font-jetbrains: var(--font-jetbrains-mono), ui-monospace, monospace;
+  --font-bricolage: var(--font-bricolage), var(--font-manrope), sans-serif;
+  --font-dmserif: var(--font-dm-serif), Georgia, serif;
+  /* Page-level display font, set by the active flavor below. */
+  --font-display: var(--display-font);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* --------------------------------------------------------------------------
+   Page flavors
+   -------------------------------------------------------------------------- */
+:root {
+  --display-font: var(--font-manrope), system-ui, sans-serif;
+  --page-bg: #ffffff;
+  --w-max: 1200px;
+  --line-color: #e6e8eb;
+  --btn-radius: 12px;
+  --btn-h: 48px;
+  --btn-px: 22px;
+  --h2-size: 36px;
+  --h2-size-m: 28px;
+  --h2-weight: 800;
+  --h2-tracking: -1.2px;
+  --h2-lh: 1.15;
+  --h2-mb: 12px;
+  --lead-size: 16px;
+  --lead-max: none;
+  --sec-pad: 80px;
+  --sec-pad-m: 56px;
+  --eyebrow-font: var(--font-manrope), system-ui, sans-serif;
+  --eyebrow-weight: 800;
+  --eyebrow-tracking: 1.4px;
+  --eyebrow-mb: 12px;
+}
+
+.flavor-home {
+  --display-font: var(--font-instrument-serif), Georgia, serif;
+  --page-bg: #ffffff;
+  --w-max: 1180px;
+  --line-color: #ece7de;
+  --btn-radius: 999px;
+  --btn-h: 50px;
+  --btn-px: 24px;
+  --h2-size: 48px;
+  --h2-size-m: 36px;
+  --h2-weight: 400;
+  --h2-tracking: -0.6px;
+  --h2-lh: 1.05;
+  --h2-mb: 14px;
+  --lead-size: 17px;
+  --lead-max: 640px;
+  --sec-pad: 96px;
+  --sec-pad-m: 64px;
+  --eyebrow-mb: 14px;
+}
+.flavor-services {
+  --display-font: var(--font-sora), var(--font-manrope), sans-serif;
+  --page-bg: #f4f5f7;
+  --line-color: #e3e6ea;
+  --h2-size: 36px;
+  --h2-size-m: 28px;
+  --h2-weight: 600;
+  --h2-tracking: -1.2px;
+  --h2-lh: 1.12;
+  --sec-pad: 80px;
+  --sec-pad-m: 56px;
+}
+.flavor-pricing {
+  --display-font: var(--font-plus-jakarta), var(--font-manrope), sans-serif;
+  --page-bg: #fbfaf7;
+  --w-max: 1160px;
+  --line-color: #e8e4dc;
+  --h2-size: 38px;
+  --h2-size-m: 30px;
+  --h2-weight: 800;
+  --h2-tracking: -1.4px;
+  --h2-lh: 1.12;
+  --sec-pad: 88px;
+  --sec-pad-m: 60px;
+}
+.flavor-tools {
+  --page-bg: #f6f7f9;
+  --line-color: #e6e8eb;
+  --h2-size: 34px;
+  --h2-size-m: 26px;
+  --h2-weight: 800;
+  --h2-tracking: -1px;
+  --h2-lh: 1.15;
+  --h2-mb: 10px;
+  --sec-pad: 72px;
+  --sec-pad-m: 52px;
+}
+.flavor-who {
+  --display-font: var(--font-outfit), var(--font-manrope), sans-serif;
+  --page-bg: #ffffff;
+  --line-color: #e6e8eb;
+  --btn-radius: 14px;
+  --h2-size: 40px;
+  --h2-size-m: 30px;
+  --h2-weight: 600;
+  --h2-tracking: -1.2px;
+  --h2-lh: 1.1;
+  --sec-pad: 88px;
+  --sec-pad-m: 60px;
+}
+/* Individual service pages (/services/*) */
+.flavor-service {
+  --page-bg: #ffffff;
+  --w-max: 1160px;
+  --line-color: #eef0f2;
+  --btn-radius: 12px;
+  --btn-px: 24px;
+  --h2-size: 42px;
+  --h2-size-m: 32px;
+  --h2-weight: 800;
+  --h2-tracking: -1.4px;
+  --h2-lh: 1.12;
+  --h2-mb: 16px;
+  --lead-size: 18px;
+  --sec-pad: 104px;
+  --sec-pad-m: 68px;
+}
+.flavor-rules {
+  --page-bg: #ffffff;
+  --w-max: 1160px;
+  --line-color: #eceef0;
+  --btn-radius: 10px;
+  --h2-size: 36px;
+  --h2-size-m: 28px;
+  --h2-weight: 800;
+  --h2-tracking: -1.2px;
+  --h2-lh: 1.15;
+  --lead-size: 17px;
+  --lead-max: 640px;
+  --sec-pad: 80px;
+  --sec-pad-m: 56px;
+  --eyebrow-font: var(--font-plex-mono), ui-monospace, monospace;
+  --eyebrow-weight: 600;
+  --eyebrow-tracking: 0.6px;
+  --eyebrow-mb: 14px;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  a {
+    color: var(--color-brand);
+  }
+  a:hover {
+    color: var(--color-brand-deep);
+  }
+  button,
+  input,
+  textarea,
+  select {
+    font: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-coral);
+    outline-offset: 2px;
+  }
+  [id] {
+    scroll-margin-top: 24px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* --------------------------------------------------------------------------
+   Components
+   -------------------------------------------------------------------------- */
+@layer components {
+  .page {
+    background: var(--page-bg);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  .wrap {
+    max-width: var(--w-max);
+    margin: 0 auto;
+    padding: 0 28px;
+    box-sizing: border-box;
+  }
+  @media (max-width: 899px) {
+    .wrap {
+      padding: 0 16px;
+    }
+  }
+
+  .sec {
+    padding: var(--sec-pad) 0;
+  }
+  @media (max-width: 899px) {
+    .sec {
+      padding: var(--sec-pad-m) 0;
+    }
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--eyebrow-font);
+    font-size: 12px;
+    font-weight: var(--eyebrow-weight);
+    letter-spacing: var(--eyebrow-tracking);
+    text-transform: uppercase;
+    color: var(--color-muted);
+    margin: 0 0 var(--eyebrow-mb);
+  }
+  .flavor-home .eyebrow::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: var(--color-coral);
+    border-radius: 2px;
+  }
+
+  .h2 {
+    font-family: var(--display-font);
+    font-size: var(--h2-size);
+    line-height: var(--h2-lh);
+    font-weight: var(--h2-weight);
+    letter-spacing: var(--h2-tracking);
+    margin: 0 0 var(--h2-mb);
+    color: var(--color-ink);
+  }
+  .h2 em {
+    font-style: italic;
+    color: var(--color-brand);
+  }
+  @media (max-width: 899px) {
+    .h2 {
+      font-size: var(--h2-size-m);
+    }
+  }
+
+  .lead {
+    font-size: var(--lead-size);
+    line-height: 1.65;
+    color: var(--color-body);
+    margin: 0;
+    max-width: var(--lead-max);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: var(--btn-h);
+    padding: 0 var(--btn-px);
+    border-radius: var(--btn-radius);
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    box-sizing: border-box;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: center;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease;
+  }
+  .btn-coral {
+    background: var(--color-coral);
+    color: var(--color-ink);
+  }
+  .btn-coral:hover {
+    background: var(--color-coral-hover);
+    color: var(--color-ink);
+  }
+  .btn-ink {
+    background: var(--color-ink);
+    color: #ffffff;
+  }
+  .btn-ink:hover {
+    background: var(--color-ink-hover);
+    color: #ffffff;
+  }
+  .btn-outline {
+    background: #ffffff;
+    color: var(--color-ink);
+    border: 1px solid var(--color-line-strong);
+  }
+  .flavor-home .btn-outline {
+    background: transparent;
+  }
+  .btn-outline:hover {
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+  .btn-white {
+    background: #ffffff;
+    color: var(--color-ink);
+  }
+  .btn-white:hover {
+    background: var(--color-sand);
+    color: var(--color-ink);
+  }
+  .btn-violet {
+    background: var(--color-violet);
+    color: #ffffff;
+  }
+  .btn-violet:hover {
+    background: #4c3388;
+    color: #ffffff;
+  }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid var(--line-color);
+    border-radius: 20px;
+  }
+  .flavor-services .card {
+    border-radius: 18px;
+  }
+
+  .link-brand {
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--color-brand);
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--color-fog);
+    color: var(--color-ink-copy);
+  }
+
+  .badge-mono {
+    display: inline-block;
+    font-family: var(--font-plex-mono), ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  .field {
+    width: 100%;
+    box-sizing: border-box;
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid var(--color-line-strong);
+    font-size: 15px;
+    background: #ffffff;
+    color: var(--color-ink);
+  }
+
+  .sr-only-label {
+    position: absolute;
+    left: -9999px;
+  }
+}
+
+/* ==========================================================================
+   Print: when a page has a print area (e.g. a tool's results), print only
+   that area. Everything that isn't the area, inside it, or one of its
+   ancestors is hidden. Mark extra elements to hide with data-print-hide.
+   ========================================================================== */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  body:has([data-print-area]) :not(:has([data-print-area])):not([data-print-area]):not([data-print-area] *) {
+    display: none !important;
+  }
+  body:has([data-print-area]) :has([data-print-area]) {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: #ffffff !important;
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+  [data-print-area] {
+    border: 0 !important;
+    padding: 0 !important;
+  }
+  [data-print-hide] {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+  }
+  * {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
 }
