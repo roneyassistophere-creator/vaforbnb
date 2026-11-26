@@ -43,7 +43,18 @@ import { useKit } from "./ProfitContext";
 import { ProfitInputs } from "./ProfitInputs";
 import { Headline, MobileBar, MoneyFlowTab, MonthsTab, NeedleTab, Overview, ScenariosTab, Tabs, TaxTab, type TabId } from "./ProfitResults";
 
-type Saved = { v: 1; inputs: Inputs; example: boolean };
+type Saved = { v: 1; inputs: Inputs; example: boolean; mixImportedAt?: string };
+
+/** The channel mix sent by the Direct booking savings calculator ("direct-booking-mix"). */
+function readMix(data: unknown): { shares: Inputs["shares"]; bookingFee: number; otherFee: number; directFee: number; directFixed: number } | null {
+  if (!data || typeof data !== "object") return null;
+  const d = data as { shares?: Record<string, unknown>; bookingFee?: unknown; otherFee?: unknown; directFee?: unknown; directFixed?: unknown };
+  const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) && v >= 0 ? v : null);
+  const sh = d.shares ?? {};
+  const shares = { airbnb: num(sh.airbnb) ?? 0, booking: num(sh.booking) ?? 0, direct: num(sh.direct) ?? 0, other: num(sh.other) ?? 0 };
+  if (Math.abs(shares.airbnb + shares.booking + shares.direct + shares.other - 100) > 0.5) return null;
+  return { shares, bookingFee: num(d.bookingFee) ?? 15, otherFee: num(d.otherFee) ?? 0, directFee: num(d.directFee) ?? 1.5, directFixed: num(d.directFixed) ?? 0.2 };
+}
 
 export function ProfitTool({ figures }: { figures: Figures }) {
   const c = useMemo(() => readContent(figures), [figures]);
@@ -62,6 +73,8 @@ export function ProfitTool({ figures }: { figures: Figures }) {
   const [london, setLondon] = useState(false);
   const [handoffMsg, setHandoffMsg] = useState("");
   const [confirmClear, setConfirmClear] = useState(false);
+  const [mixImportedAt, setMixImportedAt] = useState("");
+  const [mixImport, setMixImport] = useState<Inputs | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   /* Load (this device only), then save on every change. */
@@ -70,10 +83,19 @@ export function ProfitTool({ figures }: { figures: Figures }) {
     const restored = saved?.v === 1 ? restoreInputs(saved.inputs, c) : null;
     const flag = readHandoffData("london-flag", (x) => x);
     /* eslint-disable react-hooks/set-state-in-effect -- one-time restore from device storage after hydration */
-    if (restored) {
-      setInp(restored);
-      setExample(saved?.example === true);
-    } else setInp(defaultInputs(c, new Date().getFullYear() + 1));
+    let next = restored ?? defaultInputs(c, new Date().getFullYear() + 1);
+    let at = typeof saved?.mixImportedAt === "string" ? saved.mixImportedAt : "";
+    const mix = readHandoffData("direct-booking-mix", (x) => x);
+    const m = mix && mix.createdAt !== at ? readMix(mix.data) : null;
+    if (mix && m) {
+      setMixImport(next);
+      next = { ...next, feeMode: "channels", shares: m.shares, bookingFee: m.bookingFee, otherFee: m.otherFee, directFee: m.directFee, directFixed: m.directFixed };
+      at = mix.createdAt;
+    }
+    setInp(next);
+    setMixImportedAt(at);
+    // First visit: the starting values are examples. Saved figures keep their own flag. An import is the host's own mix.
+    setExample(!m && (restored ? saved?.example === true : true));
     setScenarios(cleanScenarios(deviceStorage.read(scenariosKey), c.model.maxScenarios));
     setLondon(!!flag && typeof flag.data === "object" && flag.data !== null && (flag.data as { london?: unknown }).london === true);
     setReady(true);
@@ -81,8 +103,8 @@ export function ProfitTool({ figures }: { figures: Figures }) {
     track("tool_opened", toolSlug, { type: restored?.mode ?? "quick" });
   }, [c]);
   useEffect(() => {
-    if (ready) deviceStorage.write(storageKey, { v: 1, inputs: inp, example } satisfies Saved);
-  }, [ready, inp, example]);
+    if (ready) deviceStorage.write(storageKey, { v: 1, inputs: inp, example, mixImportedAt } satisfies Saved);
+  }, [ready, inp, example, mixImportedAt]);
   useEffect(() => {
     if (ready) deviceStorage.write(scenariosKey, scenarios);
   }, [ready, scenarios]);
@@ -194,6 +216,21 @@ export function ProfitTool({ figures }: { figures: Figures }) {
             Reset
           </button>
         </div>
+        {mixImport && (
+          <p className="m-0 flex flex-wrap items-center gap-2 rounded-[14px] bg-green-25 px-4 py-3 text-sm font-semibold text-ink" role="status" data-imported>
+            Imported from Direct booking savings: your target channel mix.
+            <button
+              type="button"
+              className="min-h-11 px-1 font-bold underline"
+              onClick={() => {
+                setInp(mixImport);
+                setMixImport(null);
+              }}
+            >
+              Undo
+            </button>
+          </p>
+        )}
         {example && (
           <p className="m-0 rounded-[14px] bg-amber-25 px-4 py-3 text-sm font-semibold text-ink-copy" data-example-banner>
             {exampleNote}

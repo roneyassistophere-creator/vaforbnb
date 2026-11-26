@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { isToolLive } from "@/content/tools/catalog";
+import { toolPath as directToolPath, toolSlug as directToolSlug } from "@/content/tools/directBookingId";
 import { brand } from "@/config/brand";
 import { anchors } from "@/config/navigation";
 import { prices, showPrice } from "@/config/pricing";
@@ -77,6 +79,11 @@ export default function SocialMediaPage() {
               <a href="#month" className={cn(btn, "bg-white text-ink hover:bg-sand hover:text-ink")}>
                 See a sample content plan
               </a>
+              {isToolLive(directToolSlug) && (
+                <SmartLink href={directToolPath} className="w-full text-sm font-bold text-ink underline underline-offset-2" data-direct-tool-link>
+                  What would direct bookings save you? (free tool) →
+                </SmartLink>
+              )}
             </div>
           </div>
           <div className="relative flex min-h-[640px] justify-center">

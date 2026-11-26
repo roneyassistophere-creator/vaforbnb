@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { isToolLive } from "@/content/tools/catalog";
+import { toolPath as directToolPath, toolSlug as directToolSlug } from "@/content/tools/directBookingId";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -87,7 +89,12 @@ export default function DirectBookingWebsitesPage() {
               your channel manager, with secure payments and pages that win landlords. From domain to first booking, A to Z.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              <a href="#call" className={cn(btn, "btn-coral")}>
+              {isToolLive(directToolSlug) && (
+                <SmartLink href={directToolPath} className={cn(btn, "btn-coral")} data-direct-tool-link>
+                  See what you’d save
+                </SmartLink>
+              )}
+              <a href="#call" className={isToolLive(directToolSlug) ? btnOutline : cn(btn, "btn-coral")}>
                 Book a 20-minute website call
               </a>
               <a href="#included" className={btnOutline}>

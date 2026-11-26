@@ -8,6 +8,7 @@ import * as db from "./descriptionBuilder";
 import * as ls from "./longStay";
 import * as evd from "./events";
 import * as pc from "./profitCalculator";
+import * as dbk from "./directBooking";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -136,6 +137,7 @@ export const figuresSeed: Figure[] = [
   ...longStay(),
   ...eventCalendar(),
   ...profitCalculator(),
+  ...directBooking(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -541,5 +543,25 @@ function profitCalculator(): Figure[] {
       lastChecked: d,
       verify: true,
     },
+  ];
+}
+
+/**
+ * Direct booking savings calculator: wording, checklist and model settings,
+ * plus the fee presets it adds. It also reads fees.airbnbHostOnlyPercent,
+ * fees.airbnbSplitHostPercent, fees.directCardPercent,
+ * fees.directFixedPerBooking and vat.standardRate (shared).
+ */
+function directBooking(): Figure[] {
+  const d = "2026-11-26";
+  const ours = { sourceTitle: "VA for BnB direct booking calculator (editable)", sourceUrl: null };
+  const airbnb = { sourceTitle: "Airbnb Help Centre: service fees", sourceUrl: "https://www.airbnb.co.uk/help/article/1857" };
+  return [
+    { key: "directBooking.content", value: { json: { model: dbk.model, defaults: dbk.defaults, example: dbk.example, checklist: dbk.checklist, wording: dbk.wording } }, unit: null, label: `Direct booking calculator: model v${dbk.model.version} (36-month verdict line, starting values, example, checklist, wording)`, ...ours, lastChecked: d, verify: false },
+    { key: "fees.airbnbSplitGuestPercent", value: 14, unit: "%", label: "Airbnb split-fee model: guest service fee (default, editable in the tool)", ...airbnb, lastChecked: d, verify: true },
+    { key: "fees.platformFeeVatDefault", value: "off", unit: null, label: "Platform charges VAT on its host fee: starting setting (on or off)", ...airbnb, lastChecked: d, verify: true },
+    { key: "general.daysPerYear", value: 365, unit: "days", label: "Days in a year (bookings-per-year helper)", ...ours, lastChecked: d, verify: false },
+    { key: "platform.offPlatformPolicyUrl", value: "https://www.airbnb.co.uk/help/article/2799", unit: null, label: "Airbnb: policy on taking bookings or payments off the platform (link)", sourceTitle: "Airbnb Help Centre", sourceUrl: "https://www.airbnb.co.uk/help/article/2799", lastChecked: d, verify: true },
+    { key: "feesLastChecked", value: d, unit: "date", label: "Date the platform and card fee presets were last checked", ...ours, lastChecked: d, verify: true },
   ];
 }

@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { isToolLive } from "@/content/tools/catalog";
+import { toolPath as directToolPath, toolSlug as directToolSlug } from "@/content/tools/directBookingId";
 import { brand } from "@/config/brand";
 import { anchors } from "@/config/navigation";
 import { prices, showPrice } from "@/config/pricing";
@@ -99,6 +101,11 @@ export default function SeoForShortLetsPage() {
             <a href="#check" className={pillOutline}>
               Book a 20-minute call
             </a>
+            {isToolLive(directToolSlug) && (
+              <SmartLink href={directToolPath} className="w-full text-center text-sm font-bold text-ink underline underline-offset-2" data-direct-tool-link>
+                See what platform fees cost you (free tool) →
+              </SmartLink>
+            )}
           </div>
           <SearchSimulator />
         </div>
