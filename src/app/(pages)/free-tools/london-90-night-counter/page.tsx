@@ -120,6 +120,7 @@ export default async function LondonNightsPage() {
                 key={t.id}
                 href={toolLink(t)}
                 className="flex min-h-[150px] flex-col gap-2 rounded-[18px] border border-line bg-white p-5 text-ink no-underline hover:border-ink hover:text-ink"
+                data-related={t.id}
               >
                 <span className={`pill self-start ${isLive(t) ? "bg-green-100 text-green" : "bg-fog text-muted"}`}>{isLive(t) ? "Free" : "Coming soon"}</span>
                 <span className="text-[17px] font-extrabold">{t.name}</span>

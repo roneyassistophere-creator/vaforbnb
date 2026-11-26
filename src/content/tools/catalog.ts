@@ -152,7 +152,7 @@ export const tools: Tool[] = [
     ...T("numbers", "Booking performance", "What are my occupancy, ADR and RevPAR?", 1, "Result + charts", "All UK", 2, "occupancy adr revpar average daily rate kpis performance year on year"),
     slug: perfSlug,
     href: perfPath,
-    status: "coming-soon",
+    status: "live",
     kit: "growing",
     related: ["short-let-profit-calculator", "direct-booking-savings", "long-stay-discount-calculator"],
     nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },

@@ -183,3 +183,23 @@ test.describe("phone (390px)", () => {
     expect(small).toEqual([]);
   });
 });
+
+test("live: 3rd in Know my numbers; linked from Pricing optimisation, Finance check, the profit calculator, London counter and the sitemap", async ({ page, request }) => {
+  await page.goto("/free-tools?job=know-my-numbers");
+  const hub = page.locator("#booking-performance");
+  await expect(hub).toHaveAttribute("href", PATH);
+  await expect(hub).not.toContainText("Coming soon");
+  await expect.poll(async () => (await page.locator("#all [id] p.font-extrabold").allTextContents()).slice(0, 3)).toEqual(["Short-let profit calculator", "Direct booking savings", "Booking performance"]);
+  await page.goto("/services/pricing-optimisation");
+  await expect(page.locator("[data-perf-link]")).toHaveText("Check your RevPAR");
+  await page.goto("/services/finance-check");
+  await expect(page.locator("[data-perf-link]")).toHaveAttribute("href", PATH);
+  await page.goto("/free-tools/short-let-profit-calculator");
+  await expect(page.locator("[data-tool='short-let-profit-calculator'][data-ready] [data-track-link]")).toHaveAttribute("href", PATH);
+  await expect(page.locator(`[data-related='booking-performance']`)).toHaveAttribute("href", PATH);
+  await page.goto("/free-tools/london-90-night-counter");
+  await expect(page.locator(`[data-related='booking-performance']`)).toHaveAttribute("href", PATH);
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).toContain(`${PATH}</loc>`);
+  expect(await (await request.get(PATH)).text()).not.toMatch(/<meta name="robots" content="noindex/);
+});
