@@ -184,6 +184,7 @@ test("hub: 5th in Get more bookings and live; linked from Pricing optimisation a
     await page.locator(`#${tab}`).click();
     await expect(page.locator(`#persona-panel a[href="${PATH}"]`)).toBeVisible();
   }
-  await page.goto("/uk-short-let-rules#renters-rights-act");
-  await expect(page.getByText("Is rent-to-rent serviced accommodation still allowed after the Renters’ Rights Act?")).toBeVisible();
+  // The tenancy note links to the Renters’ Rights Act card (long lets in England).
+  await page.goto("/uk-short-let-rules#renters-rights-act", { waitUntil: "domcontentloaded" });
+  await expect(page.getByText("Did the Renters’ Rights Act change long lets in England?")).toBeVisible();
 });

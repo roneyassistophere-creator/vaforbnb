@@ -142,3 +142,30 @@ test.describe("phone (390px)", () => {
     expect(small).toEqual([]);
   });
 });
+
+test("live: 4th in Know my numbers; linked from the profit calculator, Finance check, Who we help, Long-stay and the sitemap", async ({ page, request }) => {
+  await page.goto("/free-tools?job=know-my-numbers");
+  const hub = page.locator("#short-let-vs-long-let");
+  await expect(hub).toHaveAttribute("href", PATH);
+  await expect(hub).not.toContainText("Coming soon");
+  await expect.poll(async () => (await page.locator("#all [id] p.font-extrabold").allTextContents()).slice(0, 4)).toEqual(["Short-let profit calculator", "Direct booking savings", "Booking performance", "Short-let vs long-let"]);
+  await page.goto("/services/finance-check");
+  await expect(page.locator("[data-svl-link]")).toHaveAttribute("href", PATH);
+  await page.goto("/who-we-help");
+  for (const tab of ["tab-side", "tab-sa"]) {
+    await page.locator(`#${tab}`).click();
+    await expect(page.locator(`#persona-panel a[href="${PATH}"]`)).toBeVisible();
+  }
+  await page.goto("/free-tools/long-stay-discount-calculator");
+  await expect(page.locator("[data-related='short-let-vs-long-let']")).toHaveAttribute("href", PATH);
+  // The profit calculator's "Compare with long-letting" opens this tool with the figures.
+  await page.goto("/free-tools/short-let-profit-calculator");
+  const profit = page.locator("[data-tool='short-let-profit-calculator'][data-ready]");
+  await expect(profit).toBeVisible();
+  await profit.locator("[data-handoff='short-let-vs-long-let']").click();
+  await expect(page).toHaveURL(new RegExp(PATH));
+  await expect(page.locator("[data-tool='short-let-vs-long-let-calculator'][data-ready] [data-imported]")).toContainText("Imported: profit");
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).toContain(`${PATH}</loc>`);
+  expect(await (await request.get(PATH)).text()).not.toMatch(/<meta name="robots" content="noindex/);
+});

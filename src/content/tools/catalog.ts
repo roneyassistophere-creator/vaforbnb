@@ -172,7 +172,7 @@ export const tools: Tool[] = [
     ...T("numbers", "Short-let vs long-let", "Would long-letting pay me more?", 2, "Result", "All UK", 3, "long let buy to let tenant airbnb vs renting rent switch renters rights act"),
     slug: svlSlug,
     href: svlPath,
-    status: "coming-soon",
+    status: "live",
     related: ["short-let-profit-calculator", "hosting-time-calculator", "long-stay-discount-calculator"],
     nextStep: { label: "Finance check", href: "/services/finance-check" },
   },
