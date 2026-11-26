@@ -74,15 +74,15 @@ export default function FinanceCheckPage() {
               behind it.
             </p>
             <div className="flex flex-wrap gap-3">
-              {isToolLive(profitSlug) && (
-                <Link href={profitPath} className="btn btn-coral rounded-[10px]" data-profit-link>
-                  Work out your real profit
-                </Link>
-              )}
               <a href="#download" className="btn btn-ink rounded-[10px]">
                 <DownloadIcon color="#FFFFFF" />
                 Download the free sheet
               </a>
+              {isToolLive(profitSlug) && (
+                <Link href={profitPath} className="btn btn-outline rounded-[10px] border-[1.5px]" data-profit-link>
+                  Work out your real profit
+                </Link>
+              )}
               <SmartLink href={brand.links.bookCall} className="btn btn-outline rounded-[10px] border-[1.5px]">
                 Book a 20-minute call
               </SmartLink>

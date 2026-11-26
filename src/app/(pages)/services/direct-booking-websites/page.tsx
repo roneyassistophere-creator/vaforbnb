@@ -89,14 +89,14 @@ export default function DirectBookingWebsitesPage() {
               your channel manager, with secure payments and pages that win landlords. From domain to first booking, A to Z.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
+              <a href="#call" className={cn(btn, "btn-coral")}>
+                Book a 20-minute website call
+              </a>
               {isToolLive(directToolSlug) && (
-                <SmartLink href={directToolPath} className={cn(btn, "btn-coral")} data-direct-tool-link>
+                <SmartLink href={directToolPath} className={btnOutline} data-direct-tool-link>
                   See what you’d save
                 </SmartLink>
               )}
-              <a href="#call" className={isToolLive(directToolSlug) ? btnOutline : cn(btn, "btn-coral")}>
-                Book a 20-minute website call
-              </a>
               <a href="#included" className={btnOutline}>
                 See what’s included
               </a>
