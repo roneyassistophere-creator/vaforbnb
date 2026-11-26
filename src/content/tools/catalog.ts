@@ -15,6 +15,7 @@ import { toolPath as longStayPath, toolSlug as longStaySlug } from "./longStayId
 import { toolPath as eventCalendarPath, toolSlug as eventCalendarSlug } from "./eventCalendarId";
 import { toolPath as profitPath, toolSlug as profitSlug } from "./profitId";
 import { toolPath as directPath, toolSlug as directSlug } from "./directBookingId";
+import { toolPath as perfPath, toolSlug as perfSlug } from "./bookingPerformanceId";
 
 /**
  * Every free tool. Used by the tools hub, tool pages and the links into tools
@@ -110,7 +111,7 @@ export const tools: Tool[] = [
     status: "live",
     badge: "Popular",
     kit: ["new-host", "growing"],
-    related: ["direct-booking-savings", "long-stay-discount-calculator", "short-let-vs-long-let"],
+    related: ["direct-booking-savings", "long-stay-discount-calculator", "short-let-vs-long-let", "booking-performance"],
     nextStep: { label: "Finance check", href: "/services/finance-check" },
   },
   {
@@ -147,7 +148,15 @@ export const tools: Tool[] = [
     related: ["uk-compliance-checker", "cleaning-checklist-generator"],
     nextStep: { label: "Laundry and maintenance", href: "/services/laundry-and-maintenance" },
   },
-  { ...T("numbers", "Booking performance", "What are my occupancy, ADR and RevPAR?", 1, "Result", "All UK", 2, "occupancy adr revpar"), related: ["short-let-profit-calculator", "direct-booking-savings"] },
+  {
+    ...T("numbers", "Booking performance", "What are my occupancy, ADR and RevPAR?", 1, "Result + charts", "All UK", 2, "occupancy adr revpar average daily rate kpis performance year on year"),
+    slug: perfSlug,
+    href: perfPath,
+    status: "coming-soon",
+    kit: "growing",
+    related: ["short-let-profit-calculator", "direct-booking-savings", "long-stay-discount-calculator"],
+    nextStep: { label: "Pricing optimisation", href: "/services/pricing-optimisation" },
+  },
   T("time", "Hosting time calculator", "How many hours does my listing take?", 2, "Result", "All UK", 3, "hours time workload"),
   {
     ...T("bookings", "Airbnb title checker", "Is my title good enough?", 1, "Result + title ideas", "All UK", 3, "title listing title headline 50 characters airbnb name"),

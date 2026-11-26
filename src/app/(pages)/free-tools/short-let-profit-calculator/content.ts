@@ -92,7 +92,7 @@ export const limits = {
 
 export const related = {
   title: "Related tools",
-  ids: ["direct-booking-savings", "long-stay-discount-calculator", "short-let-vs-long-let"],
+  ids: ["direct-booking-savings", "booking-performance", "long-stay-discount-calculator", "short-let-vs-long-let"],
 };
 
 export const rulesLinks = [

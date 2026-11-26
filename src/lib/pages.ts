@@ -19,6 +19,7 @@ import { seo as longStay } from "@/app/(pages)/free-tools/long-stay-discount-cal
 import { seo as eventCalendar } from "@/app/(pages)/free-tools/uk-event-calendar/seo";
 import { seo as profitCalculator } from "@/app/(pages)/free-tools/short-let-profit-calculator/seo";
 import { seo as directBooking } from "@/app/(pages)/free-tools/direct-booking-savings-calculator/seo";
+import { seo as bookingPerformance } from "@/app/(pages)/free-tools/occupancy-adr-revpar-calculator/seo";
 import { seo as ukRules } from "@/app/(pages)/uk-short-let-rules/seo";
 import { seo as guestCommunication } from "@/app/(pages)/services/guest-communication/seo";
 import { seo as listingOptimisation } from "@/app/(pages)/services/listing-optimisation/seo";
@@ -54,6 +55,7 @@ export const allPages: PageSeo[] = [
   eventCalendar,
   profitCalculator,
   directBooking,
+  bookingPerformance,
   ukRules,
   // Service pages
   guestCommunication,

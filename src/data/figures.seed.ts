@@ -9,6 +9,7 @@ import * as ls from "./longStay";
 import * as evd from "./events";
 import * as pc from "./profitCalculator";
 import * as dbk from "./directBooking";
+import * as bp from "./bookingPerformance";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -138,6 +139,7 @@ export const figuresSeed: Figure[] = [
   ...eventCalendar(),
   ...profitCalculator(),
   ...directBooking(),
+  ...bookingPerformance(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -563,5 +565,21 @@ function directBooking(): Figure[] {
     { key: "general.daysPerYear", value: 365, unit: "days", label: "Days in a year (bookings-per-year helper)", ...ours, lastChecked: d, verify: false },
     { key: "platform.offPlatformPolicyUrl", value: "https://www.airbnb.co.uk/help/article/2799", unit: null, label: "Airbnb: policy on taking bookings or payments off the platform (link)", sourceTitle: "Airbnb Help Centre", sourceUrl: "https://www.airbnb.co.uk/help/article/2799", lastChecked: d, verify: true },
     { key: "feesLastChecked", value: d, unit: "date", label: "Date the platform and card fee presets were last checked", ...ours, lastChecked: d, verify: true },
+  ];
+}
+
+/** Booking performance calculator: weekend nights, gap length, no-change line, insight rules, wording and examples (all assumptions). */
+function bookingPerformance(): Figure[] {
+  return [
+    {
+      key: "bookingPerformance.content",
+      value: { json: { model: bp.model, insights: bp.insights, wording: bp.wording, examples: bp.examples } },
+      unit: null,
+      label: `Booking performance calculator: model v${bp.model.version} (weekend nights, gap nights, no-change line, insight thresholds and wording, examples)`,
+      sourceTitle: "VA for BnB assumption (editable)",
+      sourceUrl: null,
+      lastChecked: "2026-11-26",
+      verify: false,
+    },
   ];
 }

@@ -37,8 +37,11 @@ export function YearCalendar({
   kinds,
   today,
   label,
+  months,
 }: {
   year: number;
+  /** Only these months (1–12); all 12 when left out. */
+  months?: number[];
   marks: Record<string, DayMark>;
   kinds: Record<string, DayKindStyle>;
   /** YYYY-MM-DD, outlined if in this year. */
@@ -53,6 +56,7 @@ export function YearCalendar({
       <div className="grid grid-cols-2 gap-x-3 gap-y-4 sm:grid-cols-3" role="group" aria-label={label}>
         {MONTHS.map((name, i) => {
           const m = i + 1;
+          if (months && !months.includes(m)) return null;
           const blanks = firstWeekday(year, m);
           return (
             <div key={name} className="min-w-0">

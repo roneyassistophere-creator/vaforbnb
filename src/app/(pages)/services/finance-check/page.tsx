@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { isToolLive, toolBySlug } from "@/content/tools/catalog";
 import { toolPath as profitPath, toolSlug as profitSlug } from "@/content/tools/profitId";
+import { toolPath as perfPath, toolSlug as perfSlug } from "@/content/tools/bookingPerformanceId";
 import type { ReactNode } from "react";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
@@ -85,6 +86,11 @@ export default function FinanceCheckPage() {
               <SmartLink href={brand.links.bookCall} className="btn btn-outline rounded-[10px] border-[1.5px]">
                 Book a 20-minute call
               </SmartLink>
+              {isToolLive(perfSlug) && (
+                <Link href={perfPath} className="w-full text-sm font-bold text-ink underline underline-offset-2" data-perf-link>
+                  Check your occupancy, ADR and RevPAR (free tool) →
+                </Link>
+              )}
             </div>
           </div>
           <SheetPreview />

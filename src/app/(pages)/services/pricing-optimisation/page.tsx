@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { isToolLive, toolById, toolBySlug, toolLink } from "@/content/tools/catalog";
+import { toolPath as perfPath, toolSlug as perfSlug } from "@/content/tools/bookingPerformanceId";
 import { toolSlug as longStaySlug } from "@/content/tools/longStayId";
 import type { ReactNode } from "react";
 import { brand } from "@/config/brand";
@@ -105,7 +106,12 @@ export default function PricingOptimisationPage() {
               ))}
             </div>
             <div className="flex flex-wrap gap-3">
-              <a href="#review" className={cn(pill, "btn-coral")}>
+              {isToolLive(perfSlug) && (
+                <Link href={perfPath} className={cn(pill, "btn-coral")} data-perf-link>
+                  Check your RevPAR
+                </Link>
+              )}
+              <a href="#review" className={isToolLive(perfSlug) ? cn(pill, "border-[1.5px] border-white bg-white text-ink hover:bg-sand hover:text-ink") : cn(pill, "btn-coral")}>
                 Get a free pricing review
               </a>
               <a href="#how" className={cn(pill, "border-[1.5px] border-[#4A5A66] bg-transparent text-white hover:border-white hover:text-white")}>

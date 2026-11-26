@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, type KeyboardEvent, type ReactNode } from "react";
 import { Toggle } from "@/components/tools/Toggle";
-import { toolById, toolLink } from "@/content/tools/catalog";
+import { isLive, toolById, toolLink } from "@/content/tools/catalog";
 import { cn } from "@/lib/cn";
 import { money, percent } from "@/lib/tools/format";
 import {
@@ -170,6 +170,11 @@ export function Overview({ r, inp, set }: { r: Result; inp: Inputs; set: (p: Par
         ))}
       </div>
 
+      {isLive(toolById("booking-performance")) && (
+        <Link href={toolLink(toolById("booking-performance")!)} className="-mt-2 justify-self-start text-sm font-bold text-brand" data-track-link>
+          Track this over time: occupancy, ADR and RevPAR →
+        </Link>
+      )}
       <Card>
         <H3>Where the money goes</H3>
         <div className="-mx-5 overflow-x-auto px-5">

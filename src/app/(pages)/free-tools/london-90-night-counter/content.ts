@@ -48,7 +48,7 @@ export const limits = {
   disclaimer: "General information, not legal advice. Check with your borough’s planning team if you’re unsure.",
 };
 
-export const related = { title: "Related tools", ids: ["uk-compliance-checker", "long-stay-discount-calculator"] };
+export const related = { title: "Related tools", ids: ["uk-compliance-checker", "long-stay-discount-calculator", "booking-performance"] };
 
 export const changelog: { date: string; note: string }[] = [
   { date: "2026-11-24", note: "First version: counts nights per property and calendar year, with overlaps, long stays, CSV and calendar import, and backups." },

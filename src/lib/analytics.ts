@@ -56,7 +56,9 @@ export type ToolEvent =
   | "tab_viewed"
   | "pdf_downloaded"
   | "handoff_clicked"
-  | "year_view_opened";
+  | "year_view_opened"
+  | "compare_used"
+  | "before_after_verdict";
 
 /** Item categories for item_added (never names or dates). `type` elsewhere is a short category like "csv" or "listing". */
 export type ItemType = "gas" | "eicr" | "fra" | "pat" | "legionella" | "licence" | "niCert" | "insurance" | "custom";

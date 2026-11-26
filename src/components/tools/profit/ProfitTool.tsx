@@ -74,7 +74,7 @@ export function ProfitTool({ figures }: { figures: Figures }) {
   const [handoffMsg, setHandoffMsg] = useState("");
   const [confirmClear, setConfirmClear] = useState(false);
   const [mixImportedAt, setMixImportedAt] = useState("");
-  const [mixImport, setMixImport] = useState<Inputs | null>(null);
+  const [mixImport, setMixImport] = useState<{ prev: Inputs; text: string } | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   /* Load (this device only), then save on every change. */
@@ -88,9 +88,17 @@ export function ProfitTool({ figures }: { figures: Figures }) {
     const mix = readHandoffData("direct-booking-mix", (x) => x);
     const m = mix && mix.createdAt !== at ? readMix(mix.data) : null;
     if (mix && m) {
-      setMixImport(next);
+      setMixImport({ prev: next, text: "Imported from Direct booking savings: your target channel mix." });
       next = { ...next, feeMode: "channels", shares: m.shares, bookingFee: m.bookingFee, otherFee: m.otherFee, directFee: m.directFee, directFixed: m.directFixed };
       at = mix.createdAt;
+    }
+    // From the Booking performance calculator: ADR as the nightly rate, and the occupancy.
+    const perf = readHandoffData("booking-performance", (x) => x);
+    const pd = perf && perf.createdAt !== at && perf.createdAt > at ? (perf.data as { nightlyRate?: unknown; occupancyPercent?: unknown }) : null;
+    if (perf && pd && typeof pd.nightlyRate === "number" && pd.nightlyRate >= 1 && typeof pd.occupancyPercent === "number" && pd.occupancyPercent >= 0 && pd.occupancyPercent <= 100) {
+      setMixImport({ prev: next, text: `Imported from Booking performance: ADR £${pd.nightlyRate.toFixed(2)} as your nightly rate, and ${pd.occupancyPercent}% occupancy.` });
+      next = { ...next, rate: pd.nightlyRate, occupancy: pd.occupancyPercent };
+      at = perf.createdAt;
     }
     setInp(next);
     setMixImportedAt(at);
@@ -218,12 +226,12 @@ export function ProfitTool({ figures }: { figures: Figures }) {
         </div>
         {mixImport && (
           <p className="m-0 flex flex-wrap items-center gap-2 rounded-[14px] bg-green-25 px-4 py-3 text-sm font-semibold text-ink" role="status" data-imported>
-            Imported from Direct booking savings: your target channel mix.
+            {mixImport.text}
             <button
               type="button"
               className="min-h-11 px-1 font-bold underline"
               onClick={() => {
-                setInp(mixImport);
+                setInp(mixImport.prev);
                 setMixImport(null);
               }}
             >
