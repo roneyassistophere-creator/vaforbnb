@@ -133,7 +133,7 @@ export const tools: Tool[] = [
     ...T("numbers", "Direct booking savings", "How much do platform fees cost me?", 1, "Result", "All UK", 2, "airbnb fees commission direct bookings booking website service fee host fee"),
     slug: directSlug,
     href: directPath,
-    status: "coming-soon",
+    status: "live",
     kit: "growing",
     related: ["short-let-profit-calculator", "booking-performance"],
     nextStep: { label: "Direct booking websites", href: "/services/direct-booking-websites" },

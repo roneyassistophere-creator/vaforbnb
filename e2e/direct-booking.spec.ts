@@ -161,3 +161,28 @@ test.describe("phone (390px)", () => {
     expect(small).toEqual([]);
   });
 });
+
+test("live: 2nd in Know my numbers; linked from the profit calculator, Direct booking websites, SEO, Social media and the sitemap", async ({ page, request }) => {
+  await page.goto("/free-tools?job=know-my-numbers");
+  const hub = page.locator("#direct-booking-savings");
+  await expect(hub).toHaveAttribute("href", PATH);
+  await expect(hub).not.toContainText("Coming soon");
+  await expect.poll(async () => (await page.locator("#all [id] p.font-extrabold").allTextContents()).slice(0, 2)).toEqual(["Short-let profit calculator", "Direct booking savings"]);
+  for (const svc of ["direct-booking-websites", "seo-for-short-lets", "social-media"]) {
+    await page.goto(`/services/${svc}`);
+    await expect(page.locator("[data-direct-tool-link]")).toHaveAttribute("href", PATH);
+  }
+  await expect(page.locator("[data-direct-tool-link]")).toBeVisible();
+  await page.goto("/services/direct-booking-websites");
+  await expect(page.locator("[data-direct-tool-link]")).toHaveText("See what you’d save");
+  // The profit calculator's hand-off button now shows and opens this tool with the figures.
+  await page.goto("/free-tools/short-let-profit-calculator");
+  const profit = page.locator("[data-tool='short-let-profit-calculator'][data-ready]");
+  await expect(profit).toBeVisible();
+  await profit.locator("[data-handoff='direct-booking-savings']").click();
+  await expect(page).toHaveURL(new RegExp(PATH));
+  await expect(page.locator(`[data-tool='direct-booking-savings-calculator'][data-ready] [data-imported]`)).toContainText("Imported from Profit calculator");
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  expect(sitemap).toContain(`${PATH}</loc>`);
+  expect(await (await request.get(PATH)).text()).not.toMatch(/<meta name="robots" content="noindex/);
+});
