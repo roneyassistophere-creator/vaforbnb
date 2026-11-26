@@ -2,6 +2,7 @@ import Link from "next/link";
 import { isToolLive, toolBySlug } from "@/content/tools/catalog";
 import { toolPath as profitPath, toolSlug as profitSlug } from "@/content/tools/profitId";
 import { toolPath as perfPath, toolSlug as perfSlug } from "@/content/tools/bookingPerformanceId";
+import { toolPath as svlPath, toolSlug as svlSlug } from "@/content/tools/shortVsLongId";
 import type { ReactNode } from "react";
 import { brand } from "@/config/brand";
 import { cn } from "@/lib/cn";
@@ -89,6 +90,11 @@ export default function FinanceCheckPage() {
               {isToolLive(perfSlug) && (
                 <Link href={perfPath} className="w-full text-sm font-bold text-ink underline underline-offset-2" data-perf-link>
                   Check your occupancy, ADR and RevPAR (free tool) →
+                </Link>
+              )}
+              {isToolLive(svlSlug) && (
+                <Link href={svlPath} className="w-full text-sm font-bold text-ink underline underline-offset-2" data-svl-link>
+                  Would long-letting pay you more? (free tool) →
                 </Link>
               )}
             </div>

@@ -16,6 +16,7 @@ import { toolPath as eventCalendarPath, toolSlug as eventCalendarSlug } from "./
 import { toolPath as profitPath, toolSlug as profitSlug } from "./profitId";
 import { toolPath as directPath, toolSlug as directSlug } from "./directBookingId";
 import { toolPath as perfPath, toolSlug as perfSlug } from "./bookingPerformanceId";
+import { toolPath as svlPath, toolSlug as svlSlug } from "./shortVsLongId";
 
 /**
  * Every free tool. Used by the tools hub, tool pages and the links into tools
@@ -167,7 +168,14 @@ export const tools: Tool[] = [
     related: ["ai-readiness-listing-scorer", "ai-ready-description-builder"],
     nextStep: { label: "Listing optimisation", href: "/services/listing-optimisation" },
   },
-  { ...T("numbers", "Short-let vs long-let", "Would long-letting pay me more?", 2, "Result", "All UK", 3, "long let rent compare"), related: ["long-stay-discount-calculator"] },
+  {
+    ...T("numbers", "Short-let vs long-let", "Would long-letting pay me more?", 2, "Result", "All UK", 3, "long let buy to let tenant airbnb vs renting rent switch renters rights act"),
+    slug: svlSlug,
+    href: svlPath,
+    status: "coming-soon",
+    related: ["short-let-profit-calculator", "hosting-time-calculator", "long-stay-discount-calculator"],
+    nextStep: { label: "Finance check", href: "/services/finance-check" },
+  },
   { ...T("numbers", "Cleaning fee calculator", "What should my cleaning fee be?", 1, "Result", "All UK", 3, "cleaning fee turnover"), related: ["visitor-levy-calculator"] },
   {
     ...T("legal", "Visitor levy calculator", "How much visitor levy do I charge?", 1, "Result + CSV", "Scotland · Wales", 3, "tourist tax visitor levy edinburgh glasgow aberdeen stirling west dunbartonshire cardiff"),

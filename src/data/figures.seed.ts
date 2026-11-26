@@ -10,6 +10,7 @@ import * as evd from "./events";
 import * as pc from "./profitCalculator";
 import * as dbk from "./directBooking";
 import * as bp from "./bookingPerformance";
+import * as svl from "./shortVsLong";
 
 /**
  * Seed values for figures and dates used by the tools. The live values are in
@@ -140,6 +141,7 @@ export const figuresSeed: Figure[] = [
   ...profitCalculator(),
   ...directBooking(),
   ...bookingPerformance(),
+  ...shortVsLong(),
 ];
 
 /** AI-readiness listing scorer: scoring model v2, listing limits and the background source (structured content). */
@@ -581,5 +583,16 @@ function bookingPerformance(): Figure[] {
       lastChecked: "2026-11-26",
       verify: false,
     },
+  ];
+}
+
+/** Short-let vs long-let comparison: defaults, wording, "who pays what", "other things to weigh", and certificate intervals. */
+function shortVsLong(): Figure[] {
+  const d = "2026-11-26";
+  const ours = { sourceTitle: "VA for BnB assumption (editable)", sourceUrl: null };
+  return [
+    { key: "shortVsLong.content", value: { json: { model: svl.model, defaults: svl.defaults, example: svl.example, whoPays: svl.whoPays, weigh: svl.weigh, wording: svl.wording } }, unit: null, label: `Short-let vs long-let: model v${svl.model.version} (defaults, “about the same” line, who pays what, things to weigh, wording)`, ...ours, lastChecked: d, verify: false },
+    { key: "longLet.eicrMonths", value: 60, unit: "months", label: "Long lets: EICR (electrical safety report) interval, used to spread the cost. VERIFY per nation.", sourceTitle: "GOV.UK: Electrical safety standards in the private rented sector", sourceUrl: "https://www.gov.uk/government/publications/electrical-safety-standards-in-the-private-rented-sector-guidance-for-landlords-tenants-and-local-authorities", lastChecked: d, verify: true },
+    { key: "longLet.epcMonths", value: 120, unit: "months", label: "Long lets: EPC validity, used to spread the cost. VERIFY per nation.", sourceTitle: "GOV.UK: Energy Performance Certificates", sourceUrl: "https://www.gov.uk/buy-sell-your-home/energy-performance-certificates", lastChecked: d, verify: true },
   ];
 }

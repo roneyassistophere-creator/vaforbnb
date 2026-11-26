@@ -77,6 +77,9 @@ export type ProfitHandoff = {
   annualFixedCosts: number;
   region: Inputs["tax"]["nation"];
   london: boolean;
+  /** Paid whichever way the property is let (already taken off the monthly profit), £ a month. */
+  sharedCosts: { mortgageInterest: number; serviceCharge: number; groundRent: number; insurance: number };
+  vatRegistered: boolean;
 };
 
 const r2 = (n: number) => Math.round(n * 100) / 100;
@@ -100,5 +103,7 @@ export function profitHandoffData(inp: Inputs, r: Result, c: Content, london: bo
     annualFixedCosts: r2(r.fixed.total * 12),
     region: inp.tax.nation,
     london,
+    sharedCosts: { mortgageInterest: r2(r.fixed.interest), serviceCharge: r2(inp.monthly.serviceCharge), groundRent: r2(inp.annual.groundRent / 12), insurance: r2(inp.annual.insurance / 12) },
+    vatRegistered: inp.vatRegistered,
   };
 }
